@@ -78,8 +78,8 @@ public class TangoWrapper {
         // Create a new Tango Configuration and enable the HelloMotionTrackingActivity API.
         TangoConfig config = tango.getConfig(TangoConfig.CONFIG_TYPE_DEFAULT);
         config.putBoolean(TangoConfig.KEY_BOOLEAN_MOTIONTRACKING, true);
-        config.putBoolean(TangoConfig.KEY_BOOLEAN_DRIFT_CORRECTION, true);
-        config.putBoolean(TangoConfig.KEY_BOOLEAN_LEARNINGMODE, false);
+        config.putBoolean(TangoConfig.KEY_BOOLEAN_DRIFT_CORRECTION, false);
+        config.putBoolean(TangoConfig.KEY_BOOLEAN_LEARNINGMODE, true);
 
         // Tango Service should automatically attempt to recover when it enters an invalid state.
         config.putBoolean(TangoConfig.KEY_BOOLEAN_AUTORECOVERY, true);
