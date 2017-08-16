@@ -11,5 +11,7 @@ MIT License
 
 #include "targetver.h"
 
-#include <stdio.h>
-#include <tchar.h>
+#include <mosquitto.h>
+#include <mosquittopp.h>
+
+#include <pcl/point_types.h>
