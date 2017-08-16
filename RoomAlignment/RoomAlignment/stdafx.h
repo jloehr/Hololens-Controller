@@ -23,6 +23,5 @@ MIT License
 #include <functional>
 
 #include <mosquitto.h>
-#include <mosquittopp.h>
 
 #include <pcl/point_types.h>

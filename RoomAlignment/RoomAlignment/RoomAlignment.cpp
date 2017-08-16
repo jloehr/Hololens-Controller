@@ -51,18 +51,17 @@ void RoomAlignment::Run()
 
 	SetConsoleCtrlHandler(reinterpret_cast<PHANDLER_ROUTINE>(CtrlHandler), true);
 
-	// Init MQTT
+	MQTT.Initialize();
 	// Init PCL
 
-	// Start Subscribtion
+	MQTT.Connect();
 	// Start PCL thread
 
 	// Sleep
 	SleepMainThread();
 
-	// Stop other threads
-
-	// Free MQTT & PCL
+	MQTT.Disconnect();
+	MQTT.Finalize();
 
 	WakeCtrlHandler();
 }

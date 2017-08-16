@@ -24,6 +24,9 @@
     <ClInclude Include="RoomAlignment.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Mosquitto.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -33,6 +36,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="RoomAlignment.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Mosquitto.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

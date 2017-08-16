@@ -9,6 +9,8 @@ MIT License
 */
 #pragma once
 
+#include "Mosquitto.h"
+
 class RoomAlignment
 {
 public:
@@ -24,6 +26,8 @@ public:
 	static BOOL CtrlHandler(DWORD CtrlType);
 
 private:
+	Mosquitto MQTT;
+
 	void SleepMainThread();
 	void WakeCtrlHandler();
 };
