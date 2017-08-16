@@ -11,6 +11,17 @@ MIT License
 
 #include "targetver.h"
 
+#include <Windows.h>
+
+#include <iostream>
+
+#include <thread>
+#include <atomic>
+#include <condition_variable>
+#include <mutex>
+
+#include <functional>
+
 #include <mosquitto.h>
 #include <mosquittopp.h>
 
