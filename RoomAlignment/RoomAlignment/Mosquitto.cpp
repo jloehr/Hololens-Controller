@@ -94,7 +94,7 @@ void Mosquitto::Publish(const std::string & Topic, const std::string & Payload, 
 	if (MosquittoContext == nullptr)
 		return;
 
-	int Result = mosquitto_publish(MosquittoContext, nullptr, Topic.c_str(), Payload.length(), Payload.c_str(), MessageQoS, Retain);
+	int Result = mosquitto_publish(MosquittoContext, nullptr, Topic.c_str(), static_cast<int>(Payload.length()), Payload.c_str(), MessageQoS, Retain);
 	std::cout << "Publish Result: " << Result << std::endl;
 }
 
