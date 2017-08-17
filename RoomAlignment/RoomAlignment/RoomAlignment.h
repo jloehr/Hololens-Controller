@@ -28,11 +28,20 @@ private:
 	const std::string HololensScanFile = "../../Data/SpatialMapping-Hololens-Office-CleanEmpty.pcd";
 	const std::string TangoScanFile = "../../Data/Tango-Office-CleanEmpty.pcd";
 
+	const std::string TimeTextId = "TimeText";
+	const std::string PointTextId = "PointText";
+	const std::string HololensCloudId = "Hololens";
+	const std::string TangoCloudId = "Tango";
+	const std::string ICPCloudId = "ICP";
+
 	Mosquitto & MQTT;
 
-	pcl::visualization::CloudViewer Viewer;
 	PointCloud::Ptr HololensRoom;
 	PointCloud::Ptr TangoRoom;
+	PointCloud::Ptr AlignedTangoRoom;
+	Eigen::Matrix4f Transformation;
+	pcl::IterativeClosestPoint<Point, Point> ICP;
+	pcl::visualization::CloudViewer Viewer;
 
 	void Run();
 

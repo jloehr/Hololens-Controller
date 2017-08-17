@@ -15,7 +15,8 @@ MIT License
 RoomAlignment::RoomAlignment(Mosquitto & MQTT)
 	:MQTT(MQTT),
 	Viewer("Latest Rooms"),
-	HololensRoom(new PointCloud()), TangoRoom(new PointCloud())
+	HololensRoom(new PointCloud()), TangoRoom(new PointCloud()), AlignedTangoRoom(new PointCloud()),
+	Transformation(Eigen::Matrix4f::Identity())
 {
 }
 
@@ -41,6 +42,10 @@ void RoomAlignment::Run()
 		// Update Clouds
 
 		// Do Alignment
+		ICP.setInputSource(TangoRoom);
+		ICP.setInputTarget(HololensRoom);
+		ICP.align(*AlignedTangoRoom, Transformation);
+		Transformation = ICP.getFinalTransformation();
 
 		// Send result
 		ShowLatest();
@@ -51,6 +56,7 @@ void RoomAlignment::ShowLatest()
 {
 	ShowCloud(HololensRoom, "HoloLens");
 	ShowCloud(TangoRoom, "Tango");
+	ShowCloud(AlignedTangoRoom, "AlignedTango");
 }
 
 void RoomAlignment::ShowCloud(PointCloud::Ptr Cloud, const std::string & CloudName)
