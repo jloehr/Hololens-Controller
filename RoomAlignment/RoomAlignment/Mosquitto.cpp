@@ -46,7 +46,7 @@ void Mosquitto::Connect()
 	if (MosquittoContext == nullptr)
 		return;
 
-	Result = mosquitto_connect(MosquittoContext, "192.168.188.201", 1883, 60);
+	Result = mosquitto_connect(MosquittoContext, Hostname.c_str(), Port, 60);
 	if (Result != MOSQ_ERR_SUCCESS)
 	{
 		std::cout << "Error connecting mosquitto: " << Result << std::endl;

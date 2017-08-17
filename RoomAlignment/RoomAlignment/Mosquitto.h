@@ -25,6 +25,9 @@ private:
 	typedef mosquitto_message * PMosquittoMessage;
 	typedef const mosquitto_message * CPMosquittoMessage;
 
+	const std::string Hostname = "192.168.188.201";
+	const int Port = 1883;
+
 	PMosquittoContext MosquittoContext;
 	std::thread MosquittoLoop;
 };
