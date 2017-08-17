@@ -22,8 +22,12 @@ public:
 	void Start();
 
 private:
+	typedef pcl::PointXYZINormal Point;
+	typedef pcl::PointCloud<Point> PointCloud;
+
 	Mosquitto & MQTT;
 
 	void Run();
+
 };
 

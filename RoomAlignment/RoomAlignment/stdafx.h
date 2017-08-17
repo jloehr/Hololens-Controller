@@ -27,4 +27,5 @@ MIT License
 
 #include <mosquitto.h>
 
+#include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
