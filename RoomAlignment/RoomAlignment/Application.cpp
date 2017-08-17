@@ -37,6 +37,7 @@ BOOL Application::CtrlHandler(DWORD CtrlType)
 }
 
 Application::Application()
+	:RoomAlignment(MQTT)
 {
 }
 
@@ -52,10 +53,10 @@ void Application::Run()
 	SetConsoleCtrlHandler(reinterpret_cast<PHANDLER_ROUTINE>(CtrlHandler), true);
 
 	MQTT.Initialize();
-	// Init PCL
+	RoomAlignment.Initialize();
 
 	MQTT.Connect();
-	// Start PCL thread
+	RoomAlignment.Start();
 
 	SleepMainThread();
 

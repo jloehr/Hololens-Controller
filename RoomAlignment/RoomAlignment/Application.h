@@ -10,6 +10,7 @@ MIT License
 #pragma once
 
 #include "Mosquitto.h"
+#include "RoomAlignment.h"
 
 class Application
 {
@@ -27,6 +28,7 @@ public:
 
 private:
 	Mosquitto MQTT;
+	RoomAlignment RoomAlignment;
 
 	void SleepMainThread();
 	void WakeCtrlHandler();
