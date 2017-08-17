@@ -22,6 +22,9 @@ MIT License
 
 #include <functional>
 
+#include <map>
+#include <vector>
+
 #include <mosquitto.h>
 
 #include <pcl/point_types.h>
