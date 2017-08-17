@@ -25,9 +25,18 @@ private:
 	typedef pcl::PointXYZINormal Point;
 	typedef pcl::PointCloud<Point> PointCloud;
 
+	const std::string HololensScanFile = "../../Data/SpatialMapping-Hololens-Office-CleanEmpty.pcd";
+	const std::string TangoScanFile = "../../Data/Tango-Office-CleanEmpty.pcd";
+
 	Mosquitto & MQTT;
 
+	pcl::visualization::CloudViewer Viewer;
+	PointCloud::Ptr HololensRoom;
+	PointCloud::Ptr TangoRoom;
+
 	void Run();
+	void ShowLatest();
+	void ShowCloud(PointCloud::Ptr Cloud, const std::string & CloudName);
 
 };
 
