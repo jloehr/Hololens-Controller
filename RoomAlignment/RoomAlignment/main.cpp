@@ -9,11 +9,11 @@ MIT License
 */
 #include "stdafx.h"
 
-#include "RoomAlignment.h"
+#include "Application.h"
 
 int main()
 {
-	RoomAlignment Application;
+	Application Application;
 	Application.Run();
 
 	return 0;

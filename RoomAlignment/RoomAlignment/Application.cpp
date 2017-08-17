@@ -8,14 +8,14 @@ MIT License
 
 */
 #include "stdafx.h"
-#include "RoomAlignment.h"
+#include "Application.h"
 
-std::atomic_bool RoomAlignment::Aborted = false;
-std::condition_variable_any RoomAlignment::MainThreadSleep;
-std::condition_variable_any RoomAlignment::CtrlHandlerThreadSleep;
-std::mutex RoomAlignment::AbortMutex;
+std::atomic_bool Application::Aborted = false;
+std::condition_variable_any Application::MainThreadSleep;
+std::condition_variable_any Application::CtrlHandlerThreadSleep;
+std::mutex Application::AbortMutex;
 
-BOOL RoomAlignment::CtrlHandler(DWORD CtrlType)
+BOOL Application::CtrlHandler(DWORD CtrlType)
 {
 	switch (CtrlType)
 	{
@@ -36,16 +36,16 @@ BOOL RoomAlignment::CtrlHandler(DWORD CtrlType)
 	}
 }
 
-RoomAlignment::RoomAlignment()
+Application::Application()
 {
 }
 
 
-RoomAlignment::~RoomAlignment()
+Application::~Application()
 {
 }
 
-void RoomAlignment::Run()
+void Application::Run()
 {
 	std::cout << "Run ..." << std::endl;
 
@@ -57,7 +57,6 @@ void RoomAlignment::Run()
 	MQTT.Connect();
 	// Start PCL thread
 
-	// Sleep
 	SleepMainThread();
 
 	MQTT.Disconnect();
@@ -66,7 +65,7 @@ void RoomAlignment::Run()
 	WakeCtrlHandler();
 }
 
-void RoomAlignment::SleepMainThread()
+void Application::SleepMainThread()
 {
 	std::lock_guard<std::mutex> lock(AbortMutex);
 
@@ -78,7 +77,7 @@ void RoomAlignment::SleepMainThread()
 	std::cout << "Main thread continues..." << std::endl;
 }
 
-void RoomAlignment::WakeCtrlHandler()
+void Application::WakeCtrlHandler()
 {
 	std::lock_guard<std::mutex> lock(AbortMutex);
 	CtrlHandlerThreadSleep.notify_all();

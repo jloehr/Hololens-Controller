@@ -11,11 +11,11 @@ MIT License
 
 #include "Mosquitto.h"
 
-class RoomAlignment
+class Application
 {
 public:
-	RoomAlignment();
-	~RoomAlignment();
+	Application();
+	~Application();
 
 	void Run();
 

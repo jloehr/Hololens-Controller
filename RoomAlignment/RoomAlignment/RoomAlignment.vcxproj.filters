@@ -21,10 +21,10 @@
     <ClInclude Include="targetver.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="RoomAlignment.h">
+    <ClInclude Include="Mosquitto.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Mosquitto.h">
+    <ClInclude Include="Application.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
@@ -35,10 +35,10 @@
     <ClCompile Include="main.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="RoomAlignment.cpp">
+    <ClCompile Include="Mosquitto.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Mosquitto.cpp">
+    <ClCompile Include="Application.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
