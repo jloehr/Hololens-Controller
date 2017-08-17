@@ -11,8 +11,6 @@ MIT License
 
 #include "targetver.h"
 
-#include <Windows.h>
-
 #include <iostream>
 
 #include <thread>
@@ -29,3 +27,7 @@ MIT License
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/visualization/cloud_viewer.h>
+
+#include <Windows.h>
