@@ -72,6 +72,7 @@ void Application::Run()
 	MQTT.Finalize();
 
 	WakeCtrlHandler();
+	exit(0);
 }
 
 void Application::SleepMainThread()
