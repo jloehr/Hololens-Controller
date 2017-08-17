@@ -35,8 +35,10 @@ private:
 	PointCloud::Ptr TangoRoom;
 
 	void Run();
+
 	void ShowLatest();
 	void ShowCloud(PointCloud::Ptr Cloud, const std::string & CloudName);
 
+	void VisualizationCallback(pcl::visualization::PCLVisualizer& viewer);
 };
 

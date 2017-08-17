@@ -10,6 +10,8 @@ MIT License
 #include "stdafx.h"
 #include "RoomAlignment.h"
 
+#include "Application.h"
+
 RoomAlignment::RoomAlignment(Mosquitto & MQTT)
 	:MQTT(MQTT),
 	Viewer("Latest Rooms"),
@@ -19,7 +21,7 @@ RoomAlignment::RoomAlignment(Mosquitto & MQTT)
 
 void RoomAlignment::Initialize()
 {
-
+	Viewer.runOnVisualizationThread([this](pcl::visualization::PCLVisualizer & viewer) {VisualizationCallback(viewer);});
 }
 
 void RoomAlignment::Start()
@@ -57,4 +59,10 @@ void RoomAlignment::ShowCloud(PointCloud::Ptr Cloud, const std::string & CloudNa
 	pcl::copyPointCloud(*Cloud, *Buffer);
 	pcl::PointCloud<pcl::PointXYZ>::ConstPtr ConstBuffer(Buffer);
 	Viewer.showCloud(ConstBuffer, CloudName);
+}
+
+void RoomAlignment::VisualizationCallback(pcl::visualization::PCLVisualizer & viewer)
+{
+	if (viewer.wasStopped())
+		Application::Close();
 }

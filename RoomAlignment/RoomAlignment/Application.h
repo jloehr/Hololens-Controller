@@ -23,7 +23,8 @@ public:
 	static std::atomic_bool Aborted;
 	static std::condition_variable_any MainThreadSleep;
 	static std::condition_variable_any CtrlHandlerThreadSleep;
-	static std::mutex AbortMutex;
+	static std::recursive_mutex AbortMutex;
+	static void Close();
 	static BOOL CtrlHandler(DWORD CtrlType);
 
 private:
