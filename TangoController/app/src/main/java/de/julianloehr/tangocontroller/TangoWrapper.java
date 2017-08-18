@@ -27,9 +27,14 @@ public class TangoWrapper {
         void onTangoPoseAvailable(final TangoPoseData pose);
     }
 
+    public interface OnTangoPointCloudAvailableListener {
+        void onTangoPointCloudAvailable(final TangoPointCloudData pointCloud);
+    }
+
     private Context mContext;
     private ShowsToastAndFinishOnUiThreadInterface mShowToastInterface;
     private OnTangoPoseAvailableListener mPoseCallback;
+    private OnTangoPointCloudAvailableListener mPointCloudCallback;
 
     private com.google.atap.tangoservice.Tango mTango;
     private TangoConfig mConfig;
@@ -44,6 +49,11 @@ public class TangoWrapper {
     public void setOnTangoPoseAvailableListener(OnTangoPoseAvailableListener poseCallback)
     {
         mPoseCallback = poseCallback;
+    }
+
+    public void setOnTangoPointCloudAvailableListener(OnTangoPointCloudAvailableListener PointCloudCallback)
+    {
+        mPointCloudCallback = PointCloudCallback;
     }
 
     public void Start()
@@ -100,6 +110,11 @@ public class TangoWrapper {
         config.putBoolean(TangoConfig.KEY_BOOLEAN_DRIFT_CORRECTION, false);
         config.putBoolean(TangoConfig.KEY_BOOLEAN_LEARNINGMODE, true);
 
+        config.putBoolean(TangoConfig.KEY_BOOLEAN_LOWLATENCYIMUINTEGRATION, true);
+        config.putBoolean(TangoConfig.KEY_BOOLEAN_SMOOTH_POSE, true);
+        config.putBoolean(TangoConfig.KEY_BOOLEAN_DEPTH, true);
+        config.putInt(TangoConfig.KEY_INT_DEPTH_MODE, TangoConfig.TANGO_DEPTH_MODE_POINT_CLOUD);
+
         // Tango Service should automatically attempt to recover when it enters an invalid state.
         config.putBoolean(TangoConfig.KEY_BOOLEAN_AUTORECOVERY, true);
         return config;
@@ -133,8 +148,9 @@ public class TangoWrapper {
             }
 
             @Override
-            public void onPointCloudAvailable(TangoPointCloudData pointCloud) {
-                // We are not using onPointCloudAvailable for this app.
+            public void onPointCloudAvailable(final TangoPointCloudData pointCloud) {
+                if(mPointCloudCallback != null)
+                    mPointCloudCallback.onTangoPointCloudAvailable((pointCloud));
             }
 
             @Override
