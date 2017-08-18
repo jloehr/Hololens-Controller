@@ -1,5 +1,6 @@
 package de.julianloehr.tangocontroller;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.google.atap.tangoservice.Tango;
@@ -18,13 +19,28 @@ import java.util.ArrayList;
 
 public class TangoWrapper {
 
-    private MainActivity mContext;
+    public interface ShowsToastAndFinishOnUiThreadInterface {
+        void showsToastAndFinishOnUiThread(final int resId);
+        void showsToastAndFinishOnUiThread(final String text);
+    }
+
+    public interface OnTangoPoseAvailableListener {
+        void OnTangoPoseAvailable(final TangoPoseData pose);
+    }
+
+    private Context mContext;
+    private ShowsToastAndFinishOnUiThreadInterface mShowToastInterface;
+    private OnTangoPoseAvailableListener mPoseCallback;
 
     private com.google.atap.tangoservice.Tango mTango;
     private TangoConfig mConfig;
 
-    public TangoWrapper(MainActivity mContext) {
-        this.mContext = mContext;
+
+    public TangoWrapper(Context context, ShowsToastAndFinishOnUiThreadInterface showToastInterface, OnTangoPoseAvailableListener poseCallback)
+    {
+        mContext = context;
+        mShowToastInterface = showToastInterface;
+        mPoseCallback = poseCallback;
     }
 
     public void Start()
@@ -39,20 +55,20 @@ public class TangoWrapper {
             // UI thread changes involved.
             @Override
             public void run() {
-                synchronized (mContext) {
+                synchronized (TangoWrapper.this) {
                     try {
                         mConfig = setupTangoConfig(mTango);
                         mTango.connect(mConfig);
                         startupTango();
                     } catch (TangoOutOfDateException e) {
                         Log.e(MainActivity.TAG, mContext.getString(R.string.exception_out_of_date), e);
-                        mContext.showsToastAndFinishOnUiThread(R.string.exception_out_of_date);
+                        mShowToastInterface.showsToastAndFinishOnUiThread(R.string.exception_out_of_date);
                     } catch (TangoErrorException e) {
                         Log.e(MainActivity.TAG, mContext.getString(R.string.exception_tango_error), e);
-                        mContext.showsToastAndFinishOnUiThread(R.string.exception_tango_error);
+                        mShowToastInterface.showsToastAndFinishOnUiThread(R.string.exception_tango_error);
                     } catch (TangoInvalidException e) {
                         Log.e(MainActivity.TAG, mContext.getString(R.string.exception_tango_invalid), e);
-                        mContext.showsToastAndFinishOnUiThread(R.string.exception_tango_invalid);
+                        mShowToastInterface.showsToastAndFinishOnUiThread(R.string.exception_tango_invalid);
                     }
                 }
             }
@@ -61,7 +77,7 @@ public class TangoWrapper {
 
     public void Stop()
     {
-        synchronized (mContext) {
+        synchronized (TangoWrapper.this) {
             try {
                 mTango.disconnect();
             } catch (TangoErrorException e) {
@@ -104,7 +120,7 @@ public class TangoWrapper {
         mTango.connectListener(framePairs, new com.google.atap.tangoservice.Tango.OnTangoUpdateListener() {
             @Override
             public void onPoseAvailable(final TangoPoseData pose) {
-                mContext.consumePose(pose);
+                mPoseCallback.OnTangoPoseAvailable(pose);
             }
 
             @Override
@@ -127,5 +143,25 @@ public class TangoWrapper {
                 // We are not using onFrameAvailable for this application.
             }
         });
+    }
+
+    /**
+     * Log the Position and Orientation of the given pose in the Logcat as information.
+     *
+     * @param pose the pose to log.
+     */
+    public void logPose(TangoPoseData pose, String tag) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        float translation[] = pose.getTranslationAsFloats();
+        stringBuilder.append("Position: " +
+                translation[0] + ", " + translation[1] + ", " + translation[2]);
+
+        float orientation[] = pose.getRotationAsFloats();
+        stringBuilder.append(". Orientation: " +
+                orientation[0] + ", " + orientation[1] + ", " +
+                orientation[2] + ", " + orientation[3]);
+
+        Log.i(tag, stringBuilder.toString());
     }
 }

@@ -1,8 +1,10 @@
 package de.julianloehr.tangocontroller;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.atap.tangoservice.TangoPoseData;
@@ -15,84 +17,31 @@ import org.json.JSONObject;
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = MainActivity.class.getSimpleName();
-
-    TangoWrapper tangoWrapper = new TangoWrapper(this);
-    MQTTWrapper mqttWrapper = new MQTTWrapper(this);
+    public static MQTTWrapper mqttWrapper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        mqttWrapper = new MQTTWrapper(this);
         mqttWrapper.Start();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        tangoWrapper.Start();
-    }
-
-    @Override
-    protected void onStop()
+    public void onVisualAlignmentButtonClick(View v)
     {
-        super.onStop();
-
-        tangoWrapper.Stop();
-        //mqttWrapper.Stop();
+        switchActivity(VisualAlignment.class);
     }
 
-    public void consumePose(TangoPoseData pose)
+    public void onScanAlignmentButtonClick(View v)
     {
-        logPose(pose);
-
-        float translation[] = pose.getTranslationAsFloats();
-        float orientation[] = pose.getRotationAsFloats();
-
-        JSONObject Data = new JSONObject();
-        JSONArray Position = new JSONArray();
-        JSONArray Orientation = new JSONArray();
-
-        try {
-            Position.put((double)translation[0]);
-            Position.put((double)translation[1]);
-            Position.put((double)translation[2]);
-
-            Orientation.put((double)orientation[0]);
-            Orientation.put((double)orientation[1]);
-            Orientation.put((double)orientation[2]);
-            Orientation.put((double)orientation[3]);
-
-            Data.put("Position", (Object) Position);
-            Data.put("Orientation", (Object) Orientation);
-        } catch (JSONException ex)
-        {
-
-        }
-
-        mqttWrapper.SendUpdate(Data.toString().getBytes());
+        switchActivity(ScanAlignment.class);
     }
 
-    /**
-     * Log the Position and Orientation of the given pose in the Logcat as information.
-     *
-     * @param pose the pose to log.
-     */
-    private void logPose(TangoPoseData pose) {
-        StringBuilder stringBuilder = new StringBuilder();
-
-        float translation[] = pose.getTranslationAsFloats();
-        stringBuilder.append("Position: " +
-                translation[0] + ", " + translation[1] + ", " + translation[2]);
-
-        float orientation[] = pose.getRotationAsFloats();
-        stringBuilder.append(". Orientation: " +
-                orientation[0] + ", " + orientation[1] + ", " +
-                orientation[2] + ", " + orientation[3]);
-
-        Log.i(TAG, stringBuilder.toString());
+    private void switchActivity(Class activity)
+    {
+        Intent intent = new Intent(this, activity);
+        startActivity(intent);
     }
 
     /**
