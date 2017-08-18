@@ -25,7 +25,7 @@ public class TangoWrapper {
     }
 
     public interface OnTangoPoseAvailableListener {
-        void OnTangoPoseAvailable(final TangoPoseData pose);
+        void onTangoPoseAvailable(final TangoPoseData pose);
     }
 
     private Context mContext;
@@ -120,7 +120,7 @@ public class TangoWrapper {
         mTango.connectListener(framePairs, new com.google.atap.tangoservice.Tango.OnTangoUpdateListener() {
             @Override
             public void onPoseAvailable(final TangoPoseData pose) {
-                mPoseCallback.OnTangoPoseAvailable(pose);
+                    mPoseCallback.onTangoPoseAvailable(pose);
             }
 
             @Override

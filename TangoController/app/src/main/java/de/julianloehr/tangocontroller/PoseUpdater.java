@@ -13,7 +13,7 @@ public class PoseUpdater implements TangoWrapper.OnTangoPoseAvailableListener {
     private static final String UpdateTopic ="TangoController/Controller/Update";
 
     @Override
-    public void OnTangoPoseAvailable(TangoPoseData pose)
+    public void onTangoPoseAvailable(final TangoPoseData pose)
     {
         logPose(pose, TAG);
         JSONObject Data = serializePose(pose);
@@ -54,7 +54,7 @@ public class PoseUpdater implements TangoWrapper.OnTangoPoseAvailableListener {
      *
      * @param pose the pose to log.
      */
-    private void logPose(TangoPoseData pose, String tag) {
+    private void logPose(final TangoPoseData pose, String tag) {
         StringBuilder stringBuilder = new StringBuilder();
 
         float translation[] = pose.getTranslationAsFloats();
