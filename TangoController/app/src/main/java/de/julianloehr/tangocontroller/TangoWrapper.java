@@ -106,14 +106,20 @@ public class TangoWrapper {
     private TangoConfig setupTangoConfig(com.google.atap.tangoservice.Tango tango) {
         // Create a new Tango Configuration and enable the HelloMotionTrackingActivity API.
         TangoConfig config = tango.getConfig(TangoConfig.CONFIG_TYPE_DEFAULT);
-        config.putBoolean(TangoConfig.KEY_BOOLEAN_MOTIONTRACKING, true);
-        config.putBoolean(TangoConfig.KEY_BOOLEAN_DRIFT_CORRECTION, false);
-        config.putBoolean(TangoConfig.KEY_BOOLEAN_LEARNINGMODE, true);
+        if(mPoseCallback != null)
+        {
+            config.putBoolean(TangoConfig.KEY_BOOLEAN_MOTIONTRACKING, true);
+            config.putBoolean(TangoConfig.KEY_BOOLEAN_DRIFT_CORRECTION, false);
+            config.putBoolean(TangoConfig.KEY_BOOLEAN_LEARNINGMODE, true);
+        }
 
-        config.putBoolean(TangoConfig.KEY_BOOLEAN_LOWLATENCYIMUINTEGRATION, true);
-        config.putBoolean(TangoConfig.KEY_BOOLEAN_SMOOTH_POSE, true);
-        config.putBoolean(TangoConfig.KEY_BOOLEAN_DEPTH, true);
-        config.putInt(TangoConfig.KEY_INT_DEPTH_MODE, TangoConfig.TANGO_DEPTH_MODE_POINT_CLOUD);
+        if(mPointCloudCallback != null)
+        {
+            config.putBoolean(TangoConfig.KEY_BOOLEAN_LOWLATENCYIMUINTEGRATION, true);
+            config.putBoolean(TangoConfig.KEY_BOOLEAN_SMOOTH_POSE, true);
+            config.putBoolean(TangoConfig.KEY_BOOLEAN_DEPTH, true);
+            config.putInt(TangoConfig.KEY_INT_DEPTH_MODE, TangoConfig.TANGO_DEPTH_MODE_POINT_CLOUD);
+        }
 
         // Tango Service should automatically attempt to recover when it enters an invalid state.
         config.putBoolean(TangoConfig.KEY_BOOLEAN_AUTORECOVERY, true);
