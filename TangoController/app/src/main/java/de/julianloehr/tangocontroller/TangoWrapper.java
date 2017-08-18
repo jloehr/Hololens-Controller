@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.google.atap.tangoservice.Tango;
+import com.google.atap.tangoservice.TangoCameraIntrinsics;
 import com.google.atap.tangoservice.TangoConfig;
 import com.google.atap.tangoservice.TangoCoordinateFramePair;
 import com.google.atap.tangoservice.TangoErrorException;
@@ -169,5 +170,10 @@ public class TangoWrapper {
                 // We are not using onFrameAvailable for this application.
             }
         });
+    }
+
+    public  TangoCameraIntrinsics getDepthCameraIntrinsics()
+    {
+        return mTango.getCameraIntrinsics(TangoCameraIntrinsics.TANGO_CAMERA_DEPTH);
     }
 }
