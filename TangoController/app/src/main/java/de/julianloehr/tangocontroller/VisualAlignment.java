@@ -10,18 +10,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class VisualAlignment extends AppCompatActivity implements TangoWrapper.ShowsToastAndFinishOnUiThreadInterface, TangoWrapper.OnTangoPoseAvailableListener {
-    public static final String TAG = VisualAlignment.class.getSimpleName();
-    private static final String UpdateTopic ="TangoController/Controller/Update";
+public class VisualAlignment extends AppCompatActivity implements TangoWrapper.ShowsToastAndFinishOnUiThreadInterface {
 
-    TangoWrapper tangoWrapper; // = new TangoWrapper(this);
+    TangoWrapper tangoWrapper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_visual_alignment);
 
-        tangoWrapper = new TangoWrapper(this, this , this);
+        tangoWrapper = new TangoWrapper(this, this , new PoseUpdater());
     }
 
     @Override
@@ -37,37 +35,6 @@ public class VisualAlignment extends AppCompatActivity implements TangoWrapper.S
         super.onStop();
 
         tangoWrapper.Stop();
-    }
-
-    public void OnTangoPoseAvailable(final TangoPoseData pose)
-    {
-        tangoWrapper.logPose(pose, TAG);
-
-        float translation[] = pose.getTranslationAsFloats();
-        float orientation[] = pose.getRotationAsFloats();
-
-        JSONObject Data = new JSONObject();
-        JSONArray Position = new JSONArray();
-        JSONArray Orientation = new JSONArray();
-
-        try {
-            Position.put((double)translation[0]);
-            Position.put((double)translation[1]);
-            Position.put((double)translation[2]);
-
-            Orientation.put((double)orientation[0]);
-            Orientation.put((double)orientation[1]);
-            Orientation.put((double)orientation[2]);
-            Orientation.put((double)orientation[3]);
-
-            Data.put("Position", (Object) Position);
-            Data.put("Orientation", (Object) Orientation);
-        } catch (JSONException ex)
-        {
-
-        }
-
-        MainActivity.mqttWrapper.Publish(UpdateTopic, Data.toString().getBytes());
     }
 
     /**
