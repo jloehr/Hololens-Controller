@@ -10,7 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class VisualAlignment extends AppCompatActivity implements TangoWrapper.ShowsToastAndFinishOnUiThreadInterface {
+public class VisualAlignment extends AppCompatActivity {
 
     TangoWrapper tangoWrapper;
 
@@ -19,7 +19,8 @@ public class VisualAlignment extends AppCompatActivity implements TangoWrapper.S
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_visual_alignment);
 
-        tangoWrapper = new TangoWrapper(this, this , new PoseUpdater());
+        tangoWrapper = new TangoWrapper(this, new ShowsToastAndFinishOnUiThread(this));
+        tangoWrapper.setOnTangoPoseAvailableListener( new PoseUpdater());
     }
 
     @Override
@@ -37,23 +38,4 @@ public class VisualAlignment extends AppCompatActivity implements TangoWrapper.S
         tangoWrapper.Stop();
     }
 
-    /**
-     * Display toast on UI thread.
-     *
-     * @param resId The resource id of the string resource to use. Can be formatted text.
-     */
-    public void showsToastAndFinishOnUiThread(final int resId) {
-        showsToastAndFinishOnUiThread(getString(resId));
-    }
-
-    public void showsToastAndFinishOnUiThread(final String text) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(VisualAlignment.this,
-                        text, Toast.LENGTH_LONG).show();
-                finish();
-            }
-        });
-    }
 }

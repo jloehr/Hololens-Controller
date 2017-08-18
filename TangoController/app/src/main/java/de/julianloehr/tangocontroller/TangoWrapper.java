@@ -35,10 +35,14 @@ public class TangoWrapper {
     private TangoConfig mConfig;
 
 
-    public TangoWrapper(Context context, ShowsToastAndFinishOnUiThreadInterface showToastInterface, OnTangoPoseAvailableListener poseCallback)
+    public TangoWrapper(Context context, ShowsToastAndFinishOnUiThreadInterface showToastInterface)
     {
         mContext = context;
         mShowToastInterface = showToastInterface;
+    }
+
+    public void setOnTangoPoseAvailableListener(OnTangoPoseAvailableListener poseCallback)
+    {
         mPoseCallback = poseCallback;
     }
 
@@ -119,6 +123,7 @@ public class TangoWrapper {
         mTango.connectListener(framePairs, new Tango.TangoUpdateCallback() {
             @Override
             public void onPoseAvailable(final TangoPoseData pose) {
+                if(mPoseCallback != null)
                     mPoseCallback.onTangoPoseAvailable(pose);
             }
 
