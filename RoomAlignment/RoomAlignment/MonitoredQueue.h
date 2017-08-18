@@ -37,7 +37,7 @@ public:
 		{
 			WakeDequeue.wait(Monitor);
 		}
-
+		Empty = true;
 		return std::move(Queue);
 	}
 
