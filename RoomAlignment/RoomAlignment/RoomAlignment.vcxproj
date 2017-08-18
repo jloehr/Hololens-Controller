@@ -87,6 +87,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="MonitoredQueue.h" />
     <ClInclude Include="Mosquitto.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="RoomAlignment.h" />
