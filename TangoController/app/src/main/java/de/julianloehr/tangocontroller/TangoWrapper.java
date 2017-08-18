@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.Log;
 
 import com.google.atap.tangoservice.Tango;
-import com.google.atap.tangoservice.Tango.OnTangoUpdateListener;
 import com.google.atap.tangoservice.TangoConfig;
 import com.google.atap.tangoservice.TangoCoordinateFramePair;
 import com.google.atap.tangoservice.TangoErrorException;
@@ -117,7 +116,7 @@ public class TangoWrapper {
                 TangoPoseData.COORDINATE_FRAME_DEVICE));
 
         // Listen for new Tango data.
-        mTango.connectListener(framePairs, new com.google.atap.tangoservice.Tango.OnTangoUpdateListener() {
+        mTango.connectListener(framePairs, new Tango.TangoUpdateCallback() {
             @Override
             public void onPoseAvailable(final TangoPoseData pose) {
                     mPoseCallback.onTangoPoseAvailable(pose);
