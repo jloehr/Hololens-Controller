@@ -9,7 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class PoseUpdater implements TangoWrapper.OnTangoPoseAvailableListener {
-    public static final String TAG = VisualAlignment.class.getSimpleName();
+    public static final String TAG = PoseUpdater.class.getSimpleName();
     private static final String UpdateTopic ="TangoController/Controller/Update";
 
     @Override
