@@ -36,6 +36,7 @@ public class MeshConstructor implements TangoWrapper.OnTangoPointCloudAvailableL
     {
         mMeshCallback = meshCallback;
         mTango3dReconstruction = new Tango3dReconstruction(new Tango3dReconstructionConfig());
+        mPointCloudManager = new TangoPointCloudManager();
 
         workerThread = new HandlerThread("Mesh Constructor");
         workerThread.start();
