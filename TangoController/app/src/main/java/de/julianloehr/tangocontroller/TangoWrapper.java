@@ -24,6 +24,10 @@ public class TangoWrapper {
         void showsToastAndFinishOnUiThread(final String text);
     }
 
+    public interface OnTangoReadyListener {
+        void onTangoReady(Tango tango);
+    }
+
     public interface OnTangoPoseAvailableListener {
         void onTangoPoseAvailable(final TangoPoseData pose);
     }
@@ -34,6 +38,7 @@ public class TangoWrapper {
 
     private Context mContext;
     private ShowsToastAndFinishOnUiThreadInterface mShowToastInterface;
+    private OnTangoReadyListener mTangoReadyCallback;
     private OnTangoPoseAvailableListener mPoseCallback;
     private OnTangoPointCloudAvailableListener mPointCloudCallback;
 
@@ -45,6 +50,11 @@ public class TangoWrapper {
     {
         mContext = context;
         mShowToastInterface = showToastInterface;
+    }
+
+    void setOnTangoreadyListener(OnTangoReadyListener tangoReadyCallback)
+    {
+        mTangoReadyCallback = tangoReadyCallback;
     }
 
     public void setOnTangoPoseAvailableListener(OnTangoPoseAvailableListener poseCallback)
@@ -74,6 +84,9 @@ public class TangoWrapper {
                         mConfig = setupTangoConfig(mTango);
                         mTango.connect(mConfig);
                         startupTango();
+                        if(mTangoReadyCallback != null)
+                            mTangoReadyCallback.onTangoReady(mTango);
+
                     } catch (TangoOutOfDateException e) {
                         Log.e(MainActivity.TAG, mContext.getString(R.string.exception_out_of_date), e);
                         mShowToastInterface.showsToastAndFinishOnUiThread(R.string.exception_out_of_date);
@@ -170,10 +183,5 @@ public class TangoWrapper {
                 // We are not using onFrameAvailable for this application.
             }
         });
-    }
-
-    public  TangoCameraIntrinsics getDepthCameraIntrinsics()
-    {
-        return mTango.getCameraIntrinsics(TangoCameraIntrinsics.TANGO_CAMERA_DEPTH);
     }
 }

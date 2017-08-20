@@ -22,8 +22,8 @@ public class ScanAlignment extends AppCompatActivity {
         tangoWrapper.setOnTangoPoseAvailableListener( new PoseUpdater());
 
         meshConstructor = new MeshConstructor(new MeshUpdater());
-        meshConstructor.setDepthCameraCalibration(tangoWrapper.getDepthCameraIntrinsics());
         tangoWrapper.setOnTangoPointCloudAvailableListener( meshConstructor );
+        tangoWrapper.setOnTangoreadyListener( meshConstructor );
     }
 
     @Override

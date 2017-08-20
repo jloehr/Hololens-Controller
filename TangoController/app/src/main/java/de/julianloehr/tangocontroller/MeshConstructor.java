@@ -7,6 +7,7 @@ import android.util.Log;
 import com.google.atap.tango.mesh.TangoMesh;
 import com.google.atap.tango.reconstruction.Tango3dReconstruction;
 import com.google.atap.tango.reconstruction.Tango3dReconstructionConfig;
+import com.google.atap.tangoservice.Tango;
 import com.google.atap.tangoservice.TangoCameraIntrinsics;
 import com.google.atap.tangoservice.TangoInvalidException;
 import com.google.atap.tangoservice.TangoPointCloudData;
@@ -17,7 +18,7 @@ import com.google.tango.support.TangoSupport;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MeshConstructor implements TangoWrapper.OnTangoPointCloudAvailableListener {
+public class MeshConstructor implements TangoWrapper.OnTangoPointCloudAvailableListener, TangoWrapper.OnTangoReadyListener {
     public static final String TAG = MeshConstructor.class.getSimpleName();
 
     public interface OnTangoMeshesAvailableListener {
@@ -45,10 +46,17 @@ public class MeshConstructor implements TangoWrapper.OnTangoPointCloudAvailableL
         createWorkerJob();
     }
 
-    public synchronized void setDepthCameraCalibration(TangoCameraIntrinsics calibration) {
+    private synchronized void setDepthCameraCalibration(TangoCameraIntrinsics calibration) {
         mTango3dReconstruction.setDepthCameraCalibration(calibration);
     }
 
+    @Override
+    public void onTangoReady(Tango tango) {
+        TangoSupport.initialize(tango);
+        setDepthCameraCalibration(tango.getCameraIntrinsics(TangoCameraIntrinsics.TANGO_CAMERA_DEPTH));
+    }
+
+    @Override
     public void onTangoPointCloudAvailable(final TangoPointCloudData pointCloud)
     {
         if((pointCloud == null) || (pointCloud.points == null))
