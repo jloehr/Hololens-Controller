@@ -1,19 +1,29 @@
 package de.julianloehr.tangocontroller;
 
 
+import android.util.Log;
+
 import com.google.atap.tango.mesh.TangoMesh;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.nio.FloatBuffer;
+
 public class MeshUpdater implements MeshConstructor.OnTangoMeshesAvailableListener {
+    public static final String TAG = MeshUpdater.class.getSimpleName();
     private static final String UpdateTopic ="TangoController/RoomScan/Update";
 
     @Override
     public void onTangoMeshesAvailable(final TangoMesh[] meshes) {
+        if(meshes.length == 0)
+            return;
+
+        Log.i(TAG, "Updating Meshes: " + meshes.length );
         JSONObject data = serializeMeshes(meshes);
         MainActivity.mqttWrapper.Publish(UpdateTopic, data.toString().getBytes());
+
     }
 
     private JSONObject serializeMeshes(final TangoMesh[] meshes)
@@ -30,7 +40,7 @@ public class MeshUpdater implements MeshConstructor.OnTangoMeshesAvailableListen
         }
         catch (JSONException e)
         {
-            // Whatever
+            Log.e(TAG, e.getMessage());
         }
 
         return data;
@@ -42,18 +52,32 @@ public class MeshUpdater implements MeshConstructor.OnTangoMeshesAvailableListen
 
         try {
             JSONArray index = new JSONArray(mesh.index);
-            JSONArray vertices = new JSONArray(mesh.vertices);
-            JSONArray normales = new JSONArray(mesh.normals);
+            JSONArray vertices = serializeFloatBuffer(mesh.vertices, mesh.numVertices);
+            JSONArray normales = serializeFloatBuffer(mesh.normals, mesh.numVertices);
 
             data.put("Index", index);
-            data.put("Verticex", vertices);
+            data.put("Vertices", vertices);
             data.put("Normals", normales);
         }
         catch (JSONException e)
         {
-            // Whatever
+            Log.e(TAG, e.getMessage());
         }
 
         return data;
+    }
+
+    private JSONArray serializeFloatBuffer(FloatBuffer buffer, int numTriples)
+            throws JSONException
+    {
+        if(buffer.hasArray()) {
+            return new JSONArray(buffer.array());
+        }
+        else
+        {
+            float[] tmpBufer = new float[numTriples * 3];
+            buffer.get(tmpBufer);
+            return new JSONArray(tmpBufer);
+        }
     }
 }
