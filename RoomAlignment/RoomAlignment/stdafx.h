@@ -32,3 +32,5 @@ MIT License
 #include <pcl/visualization/cloud_viewer.h>
 
 #include <Windows.h>
+
+#include "json.hpp"

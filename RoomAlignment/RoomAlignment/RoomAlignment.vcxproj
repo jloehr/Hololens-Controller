@@ -87,6 +87,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="json.hpp" />
     <ClInclude Include="MonitoredQueue.h" />
     <ClInclude Include="Mosquitto.h" />
     <ClInclude Include="Application.h" />
