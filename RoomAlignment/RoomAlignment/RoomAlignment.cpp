@@ -31,6 +31,7 @@ void RoomAlignment::Start()
 	WorkerThread.detach();
 }
 
+[[ noreturn ]]
 void RoomAlignment::Run()
 {
 	// Load Clouds

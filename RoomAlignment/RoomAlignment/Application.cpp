@@ -54,6 +54,7 @@ Application::~Application()
 {
 }
 
+[[ noreturn ]]
 void Application::Run()
 {
 	std::cout << "Run ..." << std::endl;
