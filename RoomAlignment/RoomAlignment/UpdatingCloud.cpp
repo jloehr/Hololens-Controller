@@ -25,6 +25,7 @@ void UpdatingCloud::Load(const std::string & FilePath)
 
 void UpdatingCloud::Clear()
 {
+	UpdateQueue.Clear();
 	ClearFlag = true;
 }
 

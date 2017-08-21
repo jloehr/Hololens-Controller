@@ -26,8 +26,11 @@ public:
 
 private:
 	const std::string HololensScanFile = "../../Data/SpatialMapping-Hololens-Office-CleanEmpty.pcd";
+	const std::string HololensScanTopic = "HololensController/RoomScan/Update";
+	const std::string HololensScanClearTopic = "HololensController/RoomScan/Clear";
 	const std::string TangoScanFile = "../../Data/Tango-Office-CleanEmpty.pcd";
 	const std::string TangoScanTopic = "TangoController/RoomScan/Update";
+	const std::string TangoScanClearTopic = "TangoController/RoomScan/Clear";
 
 	const std::string TimeTextId = "TimeText";
 	const std::string PointTextId = "PointText";
