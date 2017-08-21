@@ -10,6 +10,9 @@ MIT License
 #pragma once
 
 #include "Mosquitto.h"
+#include "MonitoredQueue.h"
+#include "UpdatingCloud.h"
+#include "Signal.h"
 
 class RoomAlignment
 {
@@ -22,11 +25,9 @@ public:
 	void Start();
 
 private:
-	typedef pcl::PointXYZINormal Point;
-	typedef pcl::PointCloud<Point> PointCloud;
-
 	const std::string HololensScanFile = "../../Data/SpatialMapping-Hololens-Office-CleanEmpty.pcd";
 	const std::string TangoScanFile = "../../Data/Tango-Office-CleanEmpty.pcd";
+	const std::string TangoScanTopic = "TangoController/RoomScan/Update";
 
 	const std::string TimeTextId = "TimeText";
 	const std::string PointTextId = "PointText";
@@ -34,11 +35,15 @@ private:
 	const std::string TangoCloudId = "Tango";
 	const std::string ICPCloudId = "ICP";
 
-	Mosquitto & MQTT;
+	Mosquitto & MQTT;	
+	Signal CloudUpdate;
+	UpdatingCloud HololensScan;
+	UpdatingCloud TangoScan;
 
-	PointCloud::Ptr HololensRoom;
-	PointCloud::Ptr TangoRoom;
+	PointCloud::ConstPtr HololensRoom;
+	PointCloud::ConstPtr TangoRoom;
 	PointCloud::Ptr AlignedTangoRoom;
+
 	Eigen::Matrix4f Transformation;
 	pcl::IterativeClosestPoint<Point, Point> ICP;
 	pcl::visualization::CloudViewer Viewer;
@@ -46,7 +51,7 @@ private:
 	void Run();
 
 	void ShowLatest();
-	void ShowCloud(PointCloud::Ptr Cloud, const std::string & CloudName);
+	void ShowCloud(PointCloud::ConstPtr Cloud, const std::string & CloudName);
 
 	void VisualizationCallback(pcl::visualization::PCLVisualizer& viewer);
 };

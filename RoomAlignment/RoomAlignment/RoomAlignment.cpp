@@ -15,7 +15,8 @@ MIT License
 RoomAlignment::RoomAlignment(Mosquitto & MQTT)
 	:MQTT(MQTT),
 	Viewer("Latest Rooms"),
-	HololensRoom(new PointCloud()), TangoRoom(new PointCloud()), AlignedTangoRoom(new PointCloud()),
+	CloudUpdate([&]()->bool {return (HololensScan.HasUpdates() || TangoScan.HasUpdates());}),
+	AlignedTangoRoom(new PointCloud()),
 	Transformation(Eigen::Matrix4f::Identity())
 {
 }
@@ -34,33 +35,46 @@ void RoomAlignment::Start()
 [[ noreturn ]]
 void RoomAlignment::Run()
 {
+	//Subscribe to Topics
+	MQTT.Subscribe(RoomAlignment::TangoScanTopic, [this](const std::string Topic, const std::string & Payload) { TangoScan.UpdateQueue.Enqueue(Payload); }, Mosquitto::AtLeastOnce);
+
 	// Load Clouds
-	pcl::io::loadPCDFile(HololensScanFile, *HololensRoom);
-	pcl::io::loadPCDFile(TangoScanFile, *TangoRoom);
+	HololensScan.Load(HololensScanFile);
+	//TangoScan.Load(TangoScanFile);
 
 	while (true)
 	{
-		// Update Clouds
+		CloudUpdate.Wait();
 
-		// Do Alignment
-		ICP.setInputSource(TangoRoom);
-		ICP.setInputTarget(HololensRoom);
-		ICP.align(*AlignedTangoRoom, Transformation);
-		Transformation = ICP.getFinalTransformation();
+		do
+		{
+			// Update Clouds
+			HololensRoom = HololensScan.GetCurrentCloud();
+			TangoRoom = TangoScan.GetCurrentCloud();
 
-		// Send result
-		ShowLatest();
+			// Do Alignment
+			ICP.setInputSource(TangoRoom);
+			ICP.setInputTarget(HololensRoom);
+			ICP.align(*AlignedTangoRoom, Transformation);
+
+			// Get Result
+			Transformation = ICP.getFinalTransformation();
+
+			// Send result
+			ShowLatest();
+
+		} while (ICP.hasConverged());
 	}
 }
 
 void RoomAlignment::ShowLatest()
 {
-	ShowCloud(HololensRoom, "HoloLens");
-	ShowCloud(TangoRoom, "Tango");
-	ShowCloud(AlignedTangoRoom, "AlignedTango");
+	ShowCloud(HololensRoom, RoomAlignment::HololensCloudId);
+	ShowCloud(TangoRoom, RoomAlignment::TangoCloudId);
+	ShowCloud(AlignedTangoRoom, RoomAlignment::ICPCloudId);
 }
 
-void RoomAlignment::ShowCloud(PointCloud::Ptr Cloud, const std::string & CloudName)
+void RoomAlignment::ShowCloud(PointCloud::ConstPtr Cloud, const std::string & CloudName)
 {
 	pcl::PointCloud<pcl::PointXYZ>::Ptr Buffer(new pcl::PointCloud<pcl::PointXYZ>());
 	pcl::copyPointCloud(*Cloud, *Buffer);
