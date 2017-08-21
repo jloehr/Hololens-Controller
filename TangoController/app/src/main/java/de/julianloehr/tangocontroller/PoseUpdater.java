@@ -17,7 +17,7 @@ public class PoseUpdater implements TangoWrapper.OnTangoPoseAvailableListener {
     {
         logPose(pose, TAG);
         JSONObject Data = serializePose(pose);
-        MainActivity.mqttWrapper.Publish(UpdateTopic, Data.toString().getBytes());
+        MainActivity.mqttWrapper.Publish(UpdateTopic, Data.toString().getBytes(), 0);
     }
 
     private JSONObject serializePose(final TangoPoseData pose)

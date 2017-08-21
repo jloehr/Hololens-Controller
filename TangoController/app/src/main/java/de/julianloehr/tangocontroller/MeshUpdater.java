@@ -22,7 +22,7 @@ public class MeshUpdater implements MeshConstructor.OnTangoMeshesAvailableListen
 
         Log.i(TAG, "Updating Meshes: " + meshes.length );
         JSONObject data = serializeMeshes(meshes);
-        MainActivity.mqttWrapper.Publish(UpdateTopic, data.toString().getBytes());
+        MainActivity.mqttWrapper.Publish(UpdateTopic, data.toString().getBytes(), 1);
 
     }
 
