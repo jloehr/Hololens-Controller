@@ -43,7 +43,7 @@ void RoomAlignment::Run()
 
 	// Load Clouds
 	HololensScan.Load(HololensScanFile);
-	//TangoScan.Load(TangoScanFile);
+	TangoScan.Load(TangoScanFile);
 
 	while (true)
 	{
