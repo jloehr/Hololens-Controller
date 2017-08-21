@@ -22,29 +22,30 @@ public:
 		return Empty; 
 	}
 
-	void Enqueue(const T && Data)
+	void Enqueue(const T & Data)
 	{
 		std::lock_guard<std::mutex> lock(Monitor);
 		Queue.push_back(Data);
 		Empty = false;
-		WakeDequeue.notify_one();
 	}
 
 	QueueType && Dequeue()
 	{
 		std::lock_guard<std::mutex> lock(Monitor);
-		if (IsEmpty())
-		{
-			WakeDequeue.wait(Monitor);
-		}
 		Empty = true;
 		return std::move(Queue);
 	}
 
+	void Clear()
+	{
+		std::lock_guard<std::mutex> lock(Monitor);
+		Empty = true;
+		Queue.clear();
+	}
+
 private:
+	std::mutex Monitor;
 	std::atomic_bool Empty;
 	std::vector<T> Queue;
 
-	std::mutex Monitor;
-	std::condition_variable_any WakeDequeue;
 };
