@@ -39,7 +39,7 @@ const PointCloud::ConstPtr UpdatingCloud::GetCurrentCloud()
 	if (ClearFlag)
 	{
 		Reset();
-		ClearFlag = true;
+		ClearFlag = false;
 	}
 
 	if (FileCloud)
@@ -56,6 +56,7 @@ const PointCloud::ConstPtr UpdatingCloud::GetCurrentCloud()
 void UpdatingCloud::Reset()
 {
 	FileCloud.reset();
+	Grid.clear();
 	Cloud.reset(new PointCloud);
 }
 
