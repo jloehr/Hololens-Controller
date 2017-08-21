@@ -20,6 +20,7 @@ MIT License
 
 #include <functional>
 
+#include <array>
 #include <map>
 #include <vector>
 

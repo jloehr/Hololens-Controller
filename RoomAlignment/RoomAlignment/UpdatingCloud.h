@@ -14,6 +14,7 @@ MIT License
 class UpdatingCloud
 {
 public:
+	typedef MonitoredQueue<std::string> UpdateMessageQueue;
 	UpdatingCloud();
 
 	void Load(const std::string & FilePath);
@@ -22,13 +23,21 @@ public:
 	bool HasUpdates() const;
 	const PointCloud::ConstPtr GetCurrentCloud();
 
-	MonitoredQueue<std::string> UpdateQueue;
+	UpdateMessageQueue UpdateQueue;
 
 private:
+	typedef std::array<int, 3> IndexKey;
+	typedef std::map<IndexKey, PointCloud::ConstPtr> CloudGrid;
+
 	std::atomic_bool ClearFlag;
 	PointCloud::Ptr FileCloud;
 	PointCloud::Ptr Cloud;
 
+	CloudGrid Grid;
+
 	void Reset();
+	void Update();
+	void UpdateGridCells(const std::string & JSONString);
+	void UpdateGridCell(const nlohmann::json & Mesh);
 };
 
