@@ -14,6 +14,17 @@ import java.nio.FloatBuffer;
 public class MeshUpdater implements MeshConstructor.OnTangoMeshesAvailableListener {
     public static final String TAG = MeshUpdater.class.getSimpleName();
     private static final String UpdateTopic ="TangoController/RoomScan/Update";
+    private static final String ClearTopic ="TangoController/RoomScan/Clear";
+
+    public  MeshUpdater()
+    {
+        clear();
+    }
+
+    public void clear()
+    {
+        MainActivity.mqttWrapper.Publish(ClearTopic, null, 2);
+    }
 
     @Override
     public void onTangoMeshesAvailable(final TangoMesh[] meshes) {

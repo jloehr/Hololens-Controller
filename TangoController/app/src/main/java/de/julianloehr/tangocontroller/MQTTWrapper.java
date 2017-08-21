@@ -120,7 +120,8 @@ public class MQTTWrapper {
     public void Publish(String Topic, byte[] payload, int qos) {
         try {
             MqttMessage message = new MqttMessage();
-            message.setPayload(payload);
+            if(payload != null)
+                message.setPayload(payload);
             message.setQos(qos);
             mqttAndroidClient.publish(Topic, message);
 

@@ -3,6 +3,7 @@ package de.julianloehr.tangocontroller;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import com.google.atap.tangoservice.TangoCameraIntrinsics;
 import com.google.atap.tangoservice.TangoPointCloudData;
@@ -12,6 +13,7 @@ public class ScanAlignment extends AppCompatActivity {
 
     TangoWrapper tangoWrapper;
     MeshConstructor meshConstructor;
+    MeshUpdater meshUpdater;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,7 +23,9 @@ public class ScanAlignment extends AppCompatActivity {
         tangoWrapper = new TangoWrapper(this, new ShowsToastAndFinishOnUiThread(this));
         tangoWrapper.setOnTangoPoseAvailableListener( new PoseUpdater());
 
-        meshConstructor = new MeshConstructor(new MeshUpdater());
+        meshUpdater = new MeshUpdater();
+        meshConstructor = new MeshConstructor(meshUpdater);
+
         tangoWrapper.setOnTangoPointCloudAvailableListener( meshConstructor );
         tangoWrapper.setOnTangoreadyListener( meshConstructor );
     }
@@ -40,4 +44,11 @@ public class ScanAlignment extends AppCompatActivity {
 
         tangoWrapper.Stop();
     }
+
+    public void onClearButtonClick(View v)
+    {
+        meshUpdater.clear();
+    }
+
+
 }
