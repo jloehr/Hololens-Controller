@@ -36,6 +36,9 @@
     <ClInclude Include="json.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Signal.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
     <ClInclude Include="PCLUtil.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -54,6 +57,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="RoomAlignment.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Signal.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
