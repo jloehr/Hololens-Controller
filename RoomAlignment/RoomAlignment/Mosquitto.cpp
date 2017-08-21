@@ -109,7 +109,7 @@ void Mosquitto::OnMessage(CPMosquittoMessage Message) const
 	const std::string Topic(Message->topic);
 	const std::string Payload(static_cast<const char *>(Message->payload), Message->payloadlen);
 
-	std::cout << "Message received for: " << Topic << std::endl;
+	std::cout << "Message received for: " << Topic << " (" << (Payload.size()/1024) << " kB)" << std::endl;
 
 	auto CallbackListIt = Subscriptions.find(Topic);
 	if (CallbackListIt != Subscriptions.end())
