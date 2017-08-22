@@ -11,9 +11,10 @@ MIT License
 #include "UpdatingCloud.h"
 
 
-UpdatingCloud::UpdatingCloud()
+UpdatingCloud::UpdatingCloud(bool ConvertFrame)
 	:ClearFlag(false)
 	,Cloud(new PointCloud)
+	,ConvertFrame(ConvertFrame)
 {
 }
 
@@ -21,6 +22,11 @@ void UpdatingCloud::Load(const std::string & FilePath)
 {
 	FileCloud.reset(new PointCloud());
 	pcl::io::loadPCDFile(FilePath, *FileCloud);
+
+	if (ConvertFrame)
+	{
+		ConvertFromAndroidToPCLFrame(FileCloud);
+	}
 }
 
 void UpdatingCloud::Clear()
@@ -100,15 +106,39 @@ void UpdatingCloud::UpdateGridCell(const nlohmann::json & Mesh)
 
 	for (size_t i = 0; i < NumPoints; i++)
 	{
-		NewCloud->points[i].x = (*VertexIt++);
-		NewCloud->points[i].y = (*VertexIt++);
-		NewCloud->points[i].z = (*VertexIt++);
-		NewCloud->points[i].normal_x = (*NormalIt++);
-		NewCloud->points[i].normal_y = (*NormalIt++);
-		NewCloud->points[i].normal_z = (*NormalIt++);
+		if (!ConvertFrame)
+		{
+			NewCloud->points[i].x = (*VertexIt++);
+			NewCloud->points[i].y = (*VertexIt++);
+			NewCloud->points[i].z = (*VertexIt++);
+			NewCloud->points[i].normal_x = (*NormalIt++);
+			NewCloud->points[i].normal_y = (*NormalIt++);
+			NewCloud->points[i].normal_z = (*NormalIt++);
+		}
+		else
+		{
+			NewCloud->points[i].x = (*VertexIt++);
+			NewCloud->points[i].z = (*VertexIt++);
+			NewCloud->points[i].z *= -1.f;
+			NewCloud->points[i].y = (*VertexIt++);
+			NewCloud->points[i].normal_x = (*NormalIt++);
+			NewCloud->points[i].normal_z = (*NormalIt++);
+			NewCloud->points[i].normal_z *= -1.f;
+			NewCloud->points[i].normal_y = (*NormalIt++);
+		}
 	}
 
 	IndexKey Index{ Mesh["Index"][0], Mesh["Index"][1], Mesh["Index"][2] };
 	Grid[Index] = NewCloud;
 }
 
+void UpdatingCloud::ConvertFromAndroidToPCLFrame(PointCloud::Ptr Cloud)
+{
+	Eigen::Matrix4f Rotation = Eigen::Matrix4f::Identity();
+	Rotation(1, 1) = 0;
+	Rotation(1, 2) = 1;
+	Rotation(2, 1) = -1;
+	Rotation(2, 2) = 0;
+
+	pcl::transformPointCloud(*Cloud, *Cloud, Rotation);
+}

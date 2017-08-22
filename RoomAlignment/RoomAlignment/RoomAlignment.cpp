@@ -15,6 +15,8 @@ MIT License
 RoomAlignment::RoomAlignment(Mosquitto & MQTT)
 	:MQTT(MQTT),
 	Viewer("Latest Rooms"),
+	HololensScan(false),
+	TangoScan(true),
 	CloudUpdate([&]()->bool {return (HololensScan.HasUpdates() || TangoScan.HasUpdates());}),
 	AlignedTangoRoom(new PointCloud()),
 	Transformation(Eigen::Matrix4f::Identity())

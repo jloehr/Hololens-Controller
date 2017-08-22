@@ -15,7 +15,7 @@ class UpdatingCloud
 {
 public:
 	typedef MonitoredQueue<std::string> UpdateMessageQueue;
-	UpdatingCloud();
+	UpdatingCloud(bool ConvertFrame);
 
 	void Load(const std::string & FilePath);
 	void Clear();
@@ -29,6 +29,8 @@ private:
 	typedef std::array<int, 3> IndexKey;
 	typedef std::map<IndexKey, PointCloud::ConstPtr> CloudGrid;
 
+	const bool ConvertFrame;
+
 	std::atomic_bool ClearFlag;
 	PointCloud::Ptr FileCloud;
 	PointCloud::Ptr Cloud;
@@ -39,5 +41,7 @@ private:
 	void Update();
 	void UpdateGridCells(const std::string & JSONString);
 	void UpdateGridCell(const nlohmann::json & Mesh);
+
+	static void ConvertFromAndroidToPCLFrame(PointCloud::Ptr Cloud);
 };
 
