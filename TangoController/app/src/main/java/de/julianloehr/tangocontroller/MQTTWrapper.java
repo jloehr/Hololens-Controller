@@ -22,7 +22,7 @@ public class MQTTWrapper {
     private MqttAndroidClient mqttAndroidClient;
 
     //final String serverUri = "tcp://iot.eclipse.org:1883";
-    final String serverUri = "tcp://192.168.188.201:1883";
+    final String serverUri = "tcp://192.168.188.2:1883";
 
     public MQTTWrapper(MainActivity Context) {
         mContext = Context;

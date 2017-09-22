@@ -33,7 +33,7 @@ private:
 	typedef std::vector<SubscriptionCallback> SubscriptionCallbackList;
 	typedef std::map<const std::string, SubscriptionCallbackList> TopicSubscriptionMap;
 
-	const std::string Hostname = "192.168.188.201";
+	const std::string Hostname = "192.168.188.2";
 	const int Port = 1883;
 
 	PMosquittoContext MosquittoContext;
