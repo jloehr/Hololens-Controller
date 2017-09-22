@@ -30,7 +30,7 @@ private:
 	const std::string HololensScanClearTopic = "HololensController/RoomScan/Clear";
 	const std::string TangoScanFile = "../../Data/Tango-Office-CleanEmpty.pcd";
 	const std::string TangoScanTopic = "TangoController/RoomScan/Update";
-	const std::string TangoScanClearTopic = "TangoController/RoomScan/Clear";
+	const std::string TangoScanResetTopic = "TangoController/RoomScan/Reset";
 
 	const std::string TimeTextId = "TimeText";
 	const std::string PointTextId = "PointText";

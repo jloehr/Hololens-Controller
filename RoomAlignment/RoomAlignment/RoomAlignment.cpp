@@ -42,7 +42,7 @@ void RoomAlignment::Run()
 	MQTT.Subscribe(RoomAlignment::HololensScanTopic, [this](const std::string Topic, const std::string & Payload) { HololensScan.UpdateQueue.Enqueue(Payload); CloudUpdate.Wake(); }, Mosquitto::AtLeastOnce);
 	MQTT.Subscribe(RoomAlignment::HololensScanClearTopic, [this](const std::string Topic, const std::string & Payload) { HololensScan.Clear(); }, Mosquitto::ExactlyOnce);
 	MQTT.Subscribe(RoomAlignment::TangoScanTopic, [this](const std::string Topic, const std::string & Payload) { TangoScan.UpdateQueue.Enqueue(Payload);  CloudUpdate.Wake(); }, Mosquitto::AtLeastOnce);
-	MQTT.Subscribe(RoomAlignment::TangoScanClearTopic, [this](const std::string Topic, const std::string & Payload) { TangoScan.Clear(); }, Mosquitto::ExactlyOnce);
+	MQTT.Subscribe(RoomAlignment::TangoScanResetTopic, [this](const std::string Topic, const std::string & Payload) { TangoScan.Clear(); /* Tango Heading */ }, Mosquitto::ExactlyOnce);
 
 	// Load Clouds
 	HololensScan.Load(HololensScanFile);
