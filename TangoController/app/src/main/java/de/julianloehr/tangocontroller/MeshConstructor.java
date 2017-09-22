@@ -52,7 +52,6 @@ public class MeshConstructor implements TangoWrapper.OnTangoPointCloudAvailableL
 
     @Override
     public void onTangoReady(Tango tango) {
-        TangoSupport.initialize(tango);
         setDepthCameraCalibration(tango.getCameraIntrinsics(TangoCameraIntrinsics.TANGO_CAMERA_DEPTH));
     }
 

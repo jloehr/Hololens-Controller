@@ -87,6 +87,7 @@ public class TangoWrapper {
                         if(mTangoReadyCallback != null)
                             mTangoReadyCallback.onTangoReady(mTango);
 
+                        TangoSupport.initialize(mTango);
                     } catch (TangoOutOfDateException e) {
                         Log.e(MainActivity.TAG, mContext.getString(R.string.exception_out_of_date), e);
                         mShowToastInterface.showsToastAndFinishOnUiThread(R.string.exception_out_of_date);
