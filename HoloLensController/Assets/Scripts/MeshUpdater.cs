@@ -8,8 +8,8 @@ using System;
 
 public class MeshUpdater : MonoBehaviour {
 
-    public string UpdateTopic = "HololensController/RoomScan/Update";
-    public string ClearTopic = "HololensController/RoomScan/Clear";
+    public string UpdateTopic;
+    public string ClearTopic;
 
     // Use this for initialization
     void Start () {
