@@ -70,7 +70,11 @@ namespace MQTT
                 {
                     Connection.Connect(Guid.NewGuid().ToString());
                 }
-                catch { }
+                catch(Exception e)
+                {
+                    Debug.Log("Unable to connect to " + BrokerHostname);
+                    Debug.LogException(e);
+                }
 
                 yield return new WaitForSeconds(ConnectionAttemptInterval);
             }
