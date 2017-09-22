@@ -14,8 +14,10 @@ import com.google.atap.tangoservice.TangoOutOfDateException;
 import com.google.atap.tangoservice.TangoPointCloudData;
 import com.google.atap.tangoservice.TangoPoseData;
 import com.google.atap.tangoservice.TangoXyzIjData;
+import com.google.tango.support.TangoSupport;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class TangoWrapper {
 
@@ -38,7 +40,7 @@ public class TangoWrapper {
 
     private Context mContext;
     private ShowsToastAndFinishOnUiThreadInterface mShowToastInterface;
-    private OnTangoReadyListener mTangoReadyCallback;
+    private List<OnTangoReadyListener> mTangoReadyCallbacks = new ArrayList<>();
     private OnTangoPoseAvailableListener mPoseCallback;
     private OnTangoPointCloudAvailableListener mPointCloudCallback;
 
@@ -52,9 +54,9 @@ public class TangoWrapper {
         mShowToastInterface = showToastInterface;
     }
 
-    void setOnTangoreadyListener(OnTangoReadyListener tangoReadyCallback)
+    void addOnTangoreadyListener(OnTangoReadyListener tangoReadyCallback)
     {
-        mTangoReadyCallback = tangoReadyCallback;
+        mTangoReadyCallbacks.add(tangoReadyCallback);
     }
 
     public void setOnTangoPoseAvailableListener(OnTangoPoseAvailableListener poseCallback)
@@ -84,10 +86,10 @@ public class TangoWrapper {
                         mConfig = setupTangoConfig(mTango);
                         mTango.connect(mConfig);
                         startupTango();
-                        if(mTangoReadyCallback != null)
-                            mTangoReadyCallback.onTangoReady(mTango);
-
                         TangoSupport.initialize(mTango);
+                        for (OnTangoReadyListener listener: mTangoReadyCallbacks) {
+                            listener.onTangoReady(mTango);
+                        }
                     } catch (TangoOutOfDateException e) {
                         Log.e(MainActivity.TAG, mContext.getString(R.string.exception_out_of_date), e);
                         mShowToastInterface.showsToastAndFinishOnUiThread(R.string.exception_out_of_date);

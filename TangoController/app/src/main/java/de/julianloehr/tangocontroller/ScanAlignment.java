@@ -27,7 +27,8 @@ public class ScanAlignment extends AppCompatActivity {
         meshConstructor = new MeshConstructor(meshUpdater);
 
         tangoWrapper.setOnTangoPointCloudAvailableListener( meshConstructor );
-        tangoWrapper.setOnTangoreadyListener( meshConstructor );
+        tangoWrapper.addOnTangoreadyListener( meshConstructor );
+        tangoWrapper.addOnTangoreadyListener( meshUpdater );
     }
 
     @Override

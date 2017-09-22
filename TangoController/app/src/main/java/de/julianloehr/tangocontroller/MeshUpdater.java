@@ -1,9 +1,12 @@
 package de.julianloehr.tangocontroller;
 
-
 import android.util.Log;
 
 import com.google.atap.tango.mesh.TangoMesh;
+import com.google.atap.tangoservice.Tango;
+import com.google.atap.tangoservice.TangoInvalidException;
+import com.google.atap.tangoservice.TangoPoseData;
+import com.google.tango.support.TangoSupport;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,19 +14,41 @@ import org.json.JSONObject;
 
 import java.nio.FloatBuffer;
 
-public class MeshUpdater implements MeshConstructor.OnTangoMeshesAvailableListener {
+public class MeshUpdater implements TangoWrapper.OnTangoReadyListener, MeshConstructor.OnTangoMeshesAvailableListener {
     public static final String TAG = MeshUpdater.class.getSimpleName();
-    private static final String UpdateTopic ="TangoController/RoomScan/Update";
-    private static final String ClearTopic ="TangoController/RoomScan/Clear";
+    private static final String UpdateTopic = "TangoController/RoomScan/Update";
+    private static final String ResetTopic = "TangoController/RoomScan/Reset";
 
-    public  MeshUpdater()
-    {
-        clear();
+    @Override
+    public void onTangoReady(Tango tango) {
+        Reset();
     }
 
-    public void clear()
+    public void Reset()
     {
-        MainActivity.mqttWrapper.Publish(ClearTopic, null, 2);
+        TangoSupport.MatrixTransformData currentTransform = null;
+        do {
+            try {
+                currentTransform = TangoSupport.getMatrixTransformAtTime(0,
+                        TangoPoseData.COORDINATE_FRAME_AREA_DESCRIPTION,
+                        TangoPoseData.COORDINATE_FRAME_DEVICE,
+                        TangoSupport.ENGINE_TANGO,
+                        TangoSupport.ENGINE_TANGO,
+                        TangoSupport.ROTATION_IGNORED);
+            } catch (TangoInvalidException e)
+            {
+                e.printStackTrace();
+            }
+
+            if(currentTransform == null)
+            {
+                Log.e(TAG, "No Pose!");
+            }
+        } while((currentTransform == null));
+
+        JSONObject data = serializeTransform(currentTransform);
+
+        MainActivity.mqttWrapper.Publish(ResetTopic, data.toString().getBytes(), 2);
     }
 
     @Override
@@ -35,6 +60,19 @@ public class MeshUpdater implements MeshConstructor.OnTangoMeshesAvailableListen
         JSONObject data = serializeMeshes(meshes);
         MainActivity.mqttWrapper.Publish(UpdateTopic, data.toString().getBytes(), 1);
 
+    }
+
+    private JSONObject serializeTransform(final TangoSupport.MatrixTransformData matrixData)
+    {
+        JSONObject data = new JSONObject();
+        try {
+            data.put("DevicePoseTransform",  new JSONArray(matrixData.matrix));
+        } catch (JSONException e)
+        {
+            Log.e(TAG, e.getMessage());
+        }
+
+        return data;
     }
 
     private JSONObject serializeMeshes(final TangoMesh[] meshes)
