@@ -26,6 +26,7 @@ RoomAlignment::RoomAlignment(Mosquitto & MQTT)
 void RoomAlignment::Initialize()
 {
 	Viewer.runOnVisualizationThread([this](pcl::visualization::PCLVisualizer & viewer) {VisualizationCallback(viewer);});
+	ICP.setMaximumIterations(1);
 }
 
 void RoomAlignment::Start()
@@ -51,6 +52,9 @@ void RoomAlignment::Run()
 	{
 		CloudUpdate.Wait();
 
+		size_t Iterations = 0;
+		std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+
 		do
 		{
 			// Update Clouds
@@ -67,6 +71,10 @@ void RoomAlignment::Run()
 
 			// Send result
 			ShowLatest();
+
+			Iterations++;
+			std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+			std::cout << "Iteration " << Iterations << " took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms.\n";
 
 		} while (ICP.hasConverged());
 	}
