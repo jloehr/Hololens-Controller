@@ -14,7 +14,7 @@ public class HeadingSender : MonoBehaviour {
 
     void OnTangoReset(string Topic, byte[] Data)
     {
-        Matrix4x4 Heading = transform.worldToLocalMatrix;
+        Matrix4x4 Heading = transform.localToWorldMatrix;
         string AsString = JsonUtility.ToJson(Heading);
         byte[] AsByte = Encoding.UTF8.GetBytes(AsString);
         
