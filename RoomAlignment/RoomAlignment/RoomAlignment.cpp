@@ -41,16 +41,27 @@ void RoomAlignment::Run()
 	//Subscribe to Topics
 	MQTT.Subscribe(RoomAlignment::HololensScanTopic, [this](const std::string Topic, const std::string & Payload) { HololensScan.UpdateQueue.Enqueue(Payload); CloudUpdate.Wake(); }, Mosquitto::AtLeastOnce);
 	MQTT.Subscribe(RoomAlignment::HololensScanClearTopic, [this](const std::string Topic, const std::string & Payload) { HololensScan.Clear(); }, Mosquitto::ExactlyOnce);
+	MQTT.Subscribe(RoomAlignment::HololensScanHeadingTopic, [this](const std::string Topic, const std::string & Payload) { HeadingEstimation.HoloLensHeadingQueue.Enqueue(Payload); }, Mosquitto::ExactlyOnce);
 	MQTT.Subscribe(RoomAlignment::TangoScanTopic, [this](const std::string Topic, const std::string & Payload) { TangoScan.UpdateQueue.Enqueue(Payload);  CloudUpdate.Wake(); }, Mosquitto::AtLeastOnce);
-	MQTT.Subscribe(RoomAlignment::TangoScanResetTopic, [this](const std::string Topic, const std::string & Payload) { TangoScan.Clear(); /* Tango Heading */ }, Mosquitto::ExactlyOnce);
+	MQTT.Subscribe(RoomAlignment::TangoScanResetTopic, [this](const std::string Topic, const std::string & Payload) { TangoScan.Clear(); HeadingEstimation.TangoHeadingQueue.Enqueue(Payload); }, Mosquitto::ExactlyOnce);
 
 	// Load Clouds
 	HololensScan.Load(HololensScanFile);
 	TangoScan.Load(TangoScanFile);
+	// Wait for Headings
+	while(!HeadingEstimation.HasBothHeadings())
+	{
+		// Update Clouds
+		HololensRoom = HololensScan.GetCurrentCloud();
+		TangoRoom = TangoScan.GetCurrentCloud();
+	}
 
+	// Get Transform Estimate 
+	Transformation = HeadingEstimation.GetTransformEstimation();
+	
 	while (true)
 	{
-		CloudUpdate.Wait();
+		//CloudUpdate.Wait();
 
 		size_t Iterations = 0;
 		std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();

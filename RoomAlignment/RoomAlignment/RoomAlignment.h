@@ -13,6 +13,7 @@ MIT License
 #include "MonitoredQueue.h"
 #include "UpdatingCloud.h"
 #include "Signal.h"
+#include "HeadingTransformEstimation.h"
 
 class RoomAlignment
 {
@@ -28,6 +29,7 @@ private:
 	const std::string HololensScanFile = "../../Data/SpatialMapping-Hololens-Office-CleanEmpty.pcd";
 	const std::string HololensScanTopic = "HololensController/RoomScan/Update";
 	const std::string HololensScanClearTopic = "HololensController/RoomScan/Clear";
+	const std::string HololensScanHeadingTopic = "HololensController/RoomScan/Heading";
 	const std::string TangoScanFile = "../../Data/Tango-Office-CleanEmpty.pcd";
 	const std::string TangoScanTopic = "TangoController/RoomScan/Update";
 	const std::string TangoScanResetTopic = "TangoController/RoomScan/Reset";
@@ -42,6 +44,7 @@ private:
 	Signal CloudUpdate;
 	UpdatingCloud HololensScan;
 	UpdatingCloud TangoScan;
+	HeadingTransformEstimation HeadingEstimation;
 
 	PointCloud::ConstPtr HololensRoom;
 	PointCloud::ConstPtr TangoRoom;
