@@ -87,6 +87,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="HeadingTransformEstimation.h" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="MonitoredQueue.h" />
     <ClInclude Include="Mosquitto.h" />
@@ -99,6 +100,7 @@
     <ClInclude Include="UpdatingCloud.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="HeadingTransformEstimation.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mosquitto.cpp" />
     <ClCompile Include="Application.cpp" />
