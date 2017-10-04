@@ -13,12 +13,12 @@ MIT License
 bool HeadingTransformEstimation::HasBothHeadings() const
 {
 	// Either one estimation was already made, or both queues have messages
-	return (BothHeadingsSet || (!TangoHeadingQueue.IsEmpty() && !HoloLensHeadingQueue.IsEmpty()));
+	return (BothHeadingsSet || (/*!TangoHeadingQueue.IsEmpty() */ true && !HoloLensHeadingQueue.IsEmpty()));
 }
 
 bool HeadingTransformEstimation::HasNewEstimation() const
 {
-	return (!TangoHeadingQueue.IsEmpty() || !HoloLensHeadingQueue.IsEmpty());
+	return (/*!TangoHeadingQueue.IsEmpty() */ false || !HoloLensHeadingQueue.IsEmpty());
 }
 
 Eigen::Matrix4f HeadingTransformEstimation::GetTransformEstimation()
@@ -27,10 +27,11 @@ Eigen::Matrix4f HeadingTransformEstimation::GetTransformEstimation()
 	{
 		BothHeadingsSet = HasBothHeadings();
 
-		UpdateTangoTransform();
+		//UpdateTangoTransform();
 		UpdateHoloLensTransform();
 
-		TransformEstimation = TangoTransform.inverse() * HoloLensTransform;
+		TransformEstimation = HoloLensTransform;
+		//TransformEstimation = TangoTransform.inverse() * HoloLensTransform;
 	}
 
 	return TransformEstimation;
