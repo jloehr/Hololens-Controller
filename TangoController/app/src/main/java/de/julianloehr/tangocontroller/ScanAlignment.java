@@ -48,7 +48,7 @@ public class ScanAlignment extends AppCompatActivity {
 
     public void onClearButtonClick(View v)
     {
-        meshUpdater.clear();
+        meshUpdater.Reset();
     }
 
 
