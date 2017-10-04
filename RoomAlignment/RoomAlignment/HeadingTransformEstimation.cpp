@@ -48,11 +48,34 @@ void HeadingTransformEstimation::UpdateTangoTransform()
 void HeadingTransformEstimation::UpdateHoloLensTransform()
 {
 	const nlohmann::json AsJSON = GetLatestTransformFromQueue(HoloLensHeadingQueue);
-	HoloLensTransform <<
-		AsJSON["m00"], AsJSON["m01"], AsJSON["m02"], AsJSON["m03"],
-		AsJSON["m10"], AsJSON["m11"], AsJSON["m12"], AsJSON["m13"],
-		AsJSON["m20"], AsJSON["m21"], AsJSON["m22"], AsJSON["m23"],
-		AsJSON["m30"], AsJSON["m31"], AsJSON["m32"], AsJSON["m33"];
+
+	HoloLensTransform = Eigen::Matrix4f::Identity();
+
+	double theta = AsJSON["Angle"] * M_PI / 180;  // The angle of rotation in radians
+	// X
+	/*
+	HoloLensTransform(1, 1) = cos(theta);
+	HoloLensTransform(1, 2) = -sin(theta);
+	HoloLensTransform(2, 1) = sin(theta);
+	HoloLensTransform(2, 2) = cos(theta);
+	*/
+	// Y
+	HoloLensTransform(0, 0) = cos(theta);
+	HoloLensTransform(0, 2) = -sin(theta);
+	HoloLensTransform(2, 0) = sin(theta);
+	HoloLensTransform(2, 2) = cos(theta);
+	// Z
+	/*
+	HoloLensTransform(0, 0) = cos(theta);
+	HoloLensTransform(0, 1) = -sin(theta);
+	HoloLensTransform(1, 0) = sin(theta);
+	HoloLensTransform(1, 1) = cos(theta);
+	*/
+
+	HoloLensTransform(0, 3) = AsJSON["X"];
+	HoloLensTransform(1, 3) = AsJSON["Y"];
+	HoloLensTransform(2, 3) = AsJSON["Z"];
+	HoloLensTransform(2, 3) *= -1.;
 }
 
 const nlohmann::json HeadingTransformEstimation::GetLatestTransformFromQueue(MessageQueue & Queue)

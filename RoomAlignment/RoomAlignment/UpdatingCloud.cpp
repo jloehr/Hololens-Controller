@@ -123,13 +123,13 @@ void UpdatingCloud::UpdateGridCell(const nlohmann::json & Mesh)
 		case Source::Unity:
 		{
 			NewCloud->points[i].x = (*VertexIt++);
-			NewCloud->points[i].x *= -1.f;
 			NewCloud->points[i].y = (*VertexIt++);
 			NewCloud->points[i].z = (*VertexIt++);
+			NewCloud->points[i].z *= -1.f;
 			NewCloud->points[i].normal_x = (*NormalIt++);
-			NewCloud->points[i].normal_x *= -1.f;
 			NewCloud->points[i].normal_y = (*NormalIt++);
 			NewCloud->points[i].normal_z = (*NormalIt++);
+			NewCloud->points[i].normal_z *= -1.f;
 		}
 		break;
 		case Source::Tango:
