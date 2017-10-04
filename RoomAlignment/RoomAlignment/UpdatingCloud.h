@@ -15,7 +15,8 @@ class UpdatingCloud
 {
 public:
 	typedef MonitoredQueue<std::string> UpdateMessageQueue;
-	UpdatingCloud(bool ConvertFrame);
+	enum class Source { PCL, Unity, Tango};
+	UpdatingCloud(Source CloudSource);
 
 	void Load(const std::string & FilePath);
 	void Clear();
@@ -29,7 +30,7 @@ private:
 	typedef std::array<int, 3> IndexKey;
 	typedef std::map<IndexKey, PointCloud::ConstPtr> CloudGrid;
 
-	const bool ConvertFrame;
+	const Source CloudSource;
 
 	std::atomic_bool ClearFlag;
 	PointCloud::Ptr FileCloud;

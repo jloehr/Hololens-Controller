@@ -11,10 +11,10 @@ MIT License
 #include "UpdatingCloud.h"
 
 
-UpdatingCloud::UpdatingCloud(bool ConvertFrame)
+UpdatingCloud::UpdatingCloud(Source CloudSource)
 	:ClearFlag(false)
 	,Cloud(new PointCloud)
-	,ConvertFrame(ConvertFrame)
+	, CloudSource(CloudSource)
 {
 }
 
@@ -23,7 +23,7 @@ void UpdatingCloud::Load(const std::string & FilePath)
 	FileCloud.reset(new PointCloud());
 	pcl::io::loadPCDFile(FilePath, *FileCloud);
 
-	if (ConvertFrame)
+	if (CloudSource == Source::Tango)
 	{
 		ConvertFromAndroidToPCLFrame(FileCloud);
 	}
@@ -61,6 +61,7 @@ const PointCloud::ConstPtr UpdatingCloud::GetCurrentCloud()
 
 void UpdatingCloud::Reset()
 {
+	std::cout << "Reseting Cloud!" << std::endl;
 	FileCloud.reset();
 	Grid.clear();
 	Cloud.reset(new PointCloud);
@@ -106,7 +107,10 @@ void UpdatingCloud::UpdateGridCell(const nlohmann::json & Mesh)
 
 	for (size_t i = 0; i < NumPoints; i++)
 	{
-		if (!ConvertFrame)
+		switch (CloudSource)
+		{
+		case Source::PCL:
+		default:
 		{
 			NewCloud->points[i].x = (*VertexIt++);
 			NewCloud->points[i].y = (*VertexIt++);
@@ -115,7 +119,20 @@ void UpdatingCloud::UpdateGridCell(const nlohmann::json & Mesh)
 			NewCloud->points[i].normal_y = (*NormalIt++);
 			NewCloud->points[i].normal_z = (*NormalIt++);
 		}
-		else
+		break;
+		case Source::Unity:
+		{
+			NewCloud->points[i].x = (*VertexIt++);
+			NewCloud->points[i].x *= -1.f;
+			NewCloud->points[i].y = (*VertexIt++);
+			NewCloud->points[i].z = (*VertexIt++);
+			NewCloud->points[i].normal_x = (*NormalIt++);
+			NewCloud->points[i].normal_x *= -1.f;
+			NewCloud->points[i].normal_y = (*NormalIt++);
+			NewCloud->points[i].normal_z = (*NormalIt++);
+		}
+		break;
+		case Source::Tango:
 		{
 			NewCloud->points[i].x = (*VertexIt++);
 			NewCloud->points[i].z = (*VertexIt++);
@@ -125,6 +142,8 @@ void UpdatingCloud::UpdateGridCell(const nlohmann::json & Mesh)
 			NewCloud->points[i].normal_z = (*NormalIt++);
 			NewCloud->points[i].normal_z *= -1.f;
 			NewCloud->points[i].normal_y = (*NormalIt++);
+		}
+		break;
 		}
 	}
 
