@@ -11,7 +11,15 @@ MIT License
 
 #include "targetver.h"
 
+#include <atomic>
 #include <stdio.h>
-#include <tchar.h>
+#include <iostream>
+#include <fstream>
+#include <chrono>
+#include <string>
+#include <vector>
+#include <thread>
 
 #include <mosquitto.h>
+
+#include <Windows.h>
