@@ -93,16 +93,22 @@ void RoomAlignment::Run()
 
 void RoomAlignment::ShowLatest()
 {
-	ShowCloud(HololensRoom, RoomAlignment::HololensCloudId);
-	ShowCloud(TangoRoom, RoomAlignment::TangoCloudId);
-	ShowCloud(AlignedTangoRoom, RoomAlignment::ICPCloudId);
+	ShowCloud(HololensRoom, RoomAlignment::HololensCloudId, 0, 255, 0);
+	ShowCloud(TangoRoom, RoomAlignment::TangoCloudId, 0, 0, 0);
+	ShowCloud(AlignedTangoRoom, RoomAlignment::ICPCloudId, 255, 0, 0);
 }
 
-void RoomAlignment::ShowCloud(PointCloud::ConstPtr Cloud, const std::string & CloudName)
+void RoomAlignment::ShowCloud(PointCloud::ConstPtr Cloud, const std::string & CloudName, uint8_t R, uint8_t G, uint8_t B)
 {
-	pcl::PointCloud<pcl::PointXYZ>::Ptr Buffer(new pcl::PointCloud<pcl::PointXYZ>());
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr Buffer(new pcl::PointCloud<pcl::PointXYZRGB>());
 	pcl::copyPointCloud(*Cloud, *Buffer);
-	pcl::PointCloud<pcl::PointXYZ>::ConstPtr ConstBuffer(Buffer);
+	for (pcl::PointXYZRGB & Point : *Buffer)
+	{
+		Point.r = R;
+		Point.g = G;
+		Point.b = B;
+	}
+	pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr ConstBuffer(Buffer);
 	Viewer.showCloud(ConstBuffer, CloudName);
 }
 

@@ -57,7 +57,7 @@ private:
 	void Run();
 
 	void ShowLatest();
-	void ShowCloud(PointCloud::ConstPtr Cloud, const std::string & CloudName);
+	void ShowCloud(PointCloud::ConstPtr Cloud, const std::string & CloudName, uint8_t R, uint8_t G, uint8_t B);
 
 	void VisualizationCallback(pcl::visualization::PCLVisualizer& viewer);
 };
