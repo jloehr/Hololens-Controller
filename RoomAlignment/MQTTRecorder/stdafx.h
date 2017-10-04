@@ -1,6 +1,6 @@
 /*
 
-Copyright(C) 2017 Julian Löhr
+Copyright(C) 2017 Julian LÃ¶hr
 All rights reserved.
 
 Licensed under:
@@ -13,3 +13,5 @@ MIT License
 
 #include <stdio.h>
 #include <tchar.h>
+
+#include <mosquitto.h>

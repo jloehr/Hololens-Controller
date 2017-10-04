@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RoomAlignment", "RoomAlignment\RoomAlignment.vcxproj", "{63EB8E57-1F61-4633-B486-0D74A4B55102}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MQTTRecorder", "MQTTRecorder\MQTTRecorder.vcxproj", "{882B558B-A6AD-450C-8B3B-020240890AE0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
