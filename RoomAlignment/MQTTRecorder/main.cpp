@@ -71,6 +71,9 @@ static void Play()
 {
 	std::ifstream File(FileName, std::ofstream::binary);
 	typedef std::vector<Message> MessageList;
+	bool FillPreBatch = true;
+	uint64_t ResetTime = 0;
+	MessageList PreBatch;
 	MessageList List;
 
 	if (!File.is_open())
@@ -91,7 +94,18 @@ static void Play()
 		Buffer.Payload.resize(DataLength);
 		File.read(Buffer.Payload.data(), Buffer.Payload.size());
 
-		List.emplace_back(std::move(Buffer));
+		if (FillPreBatch && (Buffer.Topic == "TangoController/RoomScan/Reset"))
+		{
+			FillPreBatch = false;
+			ResetTime = Buffer.Timestamp;
+		}
+
+		Buffer.Timestamp -= ResetTime;
+
+		if(FillPreBatch)
+			PreBatch.emplace_back(std::move(Buffer));
+		else
+			List.emplace_back(std::move(Buffer));
 	}
 
 	std::cout << "File ready: " << FileName << std::endl;
@@ -107,16 +121,40 @@ static void Play()
 
 	while (true)
 	{
-		auto Start = std::chrono::steady_clock::now();
-
-		for (const Message & Msg : List)
+		for (unsigned int Seconds = 1; Seconds <= 20; Seconds++)
 		{
-			auto Time = Start + std::chrono::milliseconds(Msg.Timestamp);
-			std::this_thread::sleep_until(Time);
+			std::cout << "Sending " << Seconds << " seconds of Data" << std::endl;
 
-			mosquitto_publish(Context, nullptr, Msg.Topic.c_str(), Msg.Payload.size(), Msg.Payload.data(), 2, false);
+			// Send Prebatch Immediately
+			for (const Message & Msg : PreBatch)
+			{
+				mosquitto_publish(Context, nullptr, Msg.Topic.c_str(), Msg.Payload.size(), Msg.Payload.data(), 2, false);
+			}
+
+			// Sleep one second, so RoomAlignment can process data
+			std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+			auto Start = std::chrono::steady_clock::now();
+			auto End = Start + std::chrono::seconds(Seconds);
+
+			for (const Message & Msg : List)
+			{
+				auto Time = Start + std::chrono::milliseconds(Msg.Timestamp);
+
+				// If next update is beyond current data timespan finish up
+				if (Time > End)
+					break;
+
+				std::this_thread::sleep_until(Time);
+				mosquitto_publish(Context, nullptr, Msg.Topic.c_str(), Msg.Payload.size(), Msg.Payload.data(), 2, false);
+			}
+
+			mosquitto_publish(Context, nullptr, "RoomAlignment/Run/Finished", 0, nullptr, 2, false);
+			std::cout << "Run finished!" << std::endl;
+			system("pause");
 		}
 
+		std::cout << "Test finished!"<< std::endl;
 		system("pause");
 	}
 
