@@ -94,9 +94,9 @@ void RoomAlignment::Run()
 
 void RoomAlignment::ShowLatest()
 {
-	ShowCloud(HololensRoom, RoomAlignment::HololensCloudId, 0, 255, 0);
-	ShowCloud(TangoRoom, RoomAlignment::TangoCloudId, 0, 0, 0);
-	ShowCloud(AlignedTangoRoom, RoomAlignment::ICPCloudId, 255, 0, 0);
+	ShowCloud(HololensRoom, RoomAlignment::HololensCloudId, 255, 0, 0);
+	ShowCloud(TangoRoom, RoomAlignment::TangoCloudId, 0, 0, 255);
+	ShowCloud(AlignedTangoRoom, RoomAlignment::ICPCloudId, 0, 255, 0);
 }
 
 void RoomAlignment::ShowCloud(PointCloud::ConstPtr Cloud, const std::string & CloudName, uint8_t R, uint8_t G, uint8_t B)
