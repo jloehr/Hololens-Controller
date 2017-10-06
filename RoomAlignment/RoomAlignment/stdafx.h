@@ -32,6 +32,8 @@ MIT License
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/registration/icp.h>
+#include <pcl/registration/gicp.h>
+#include <pcl/registration/icp_nl.h>
 #include <pcl/visualization/cloud_viewer.h>
 
 #include <Windows.h>
