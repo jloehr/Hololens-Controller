@@ -129,10 +129,10 @@ void RoomAlignment::Run()
 			constexpr std::streamsize Width = 15;
 			constexpr std::streamsize Precision = 10;
 			std::cout.precision(Precision);
-			std::cout << std::fixed << std::setw(Width) << Transformation(0, 0) << '\t' << std::setw(Width) << Transformation(0, 1) << '\t' << std::setw(Width) << Transformation(0, 2) << '\t' << std::setw(Width) << Transformation(0, 3) << std::endl;
-			std::cout << std::fixed << std::setw(Width) << Transformation(1, 0) << '\t' << std::setw(Width) << Transformation(1, 1) << '\t' << std::setw(Width) << Transformation(1, 2) << '\t' << std::setw(Width) << Transformation(1, 3) << std::endl;
-			std::cout << std::fixed << std::setw(Width) << Transformation(2, 0) << '\t' << std::setw(Width) << Transformation(2, 1) << '\t' << std::setw(Width) << Transformation(2, 2) << '\t' << std::setw(Width) << Transformation(2, 3) << std::endl;
-			std::cout << std::fixed << std::setw(Width) << Transformation(3, 0) << '\t' << std::setw(Width) << Transformation(3, 1) << '\t' << std::setw(Width) << Transformation(3, 2) << '\t' << std::setw(Width) << Transformation(3, 3) << std::endl;
+			std::cout << std::fixed << std::setw(Width) << Transformation(0, 0) << ',' << std::setw(Width) << Transformation(0, 1) << ',' << std::setw(Width) << Transformation(0, 2) << ',' << std::setw(Width) << Transformation(0, 3) << std::endl;
+			std::cout << std::fixed << std::setw(Width) << Transformation(1, 0) << ',' << std::setw(Width) << Transformation(1, 1) << ',' << std::setw(Width) << Transformation(1, 2) << ',' << std::setw(Width) << Transformation(1, 3) << std::endl;
+			std::cout << std::fixed << std::setw(Width) << Transformation(2, 0) << ',' << std::setw(Width) << Transformation(2, 1) << ',' << std::setw(Width) << Transformation(2, 2) << ',' << std::setw(Width) << Transformation(2, 3) << std::endl;
+			std::cout << std::fixed << std::setw(Width) << Transformation(3, 0) << ',' << std::setw(Width) << Transformation(3, 1) << ',' << std::setw(Width) << Transformation(3, 2) << ',' << std::setw(Width) << Transformation(3, 3) << std::endl;
 		}
 
 		// Send result
