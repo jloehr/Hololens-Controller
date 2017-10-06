@@ -11,10 +11,11 @@ MIT License
 #include "UpdatingCloud.h"
 
 
-UpdatingCloud::UpdatingCloud(Source CloudSource)
+UpdatingCloud::UpdatingCloud(Source CloudSource, float Leafsize)
 	:ClearFlag(false)
 	,Cloud(new PointCloud)
-	, CloudSource(CloudSource)
+	,CloudSource(CloudSource)
+	,Leafsize(Leafsize)
 {
 }
 
@@ -145,6 +146,16 @@ void UpdatingCloud::UpdateGridCell(const nlohmann::json & Mesh)
 		}
 		break;
 		}
+	}
+
+	if (Leafsize != 0.f)
+	{
+		PointCloud::Ptr FilteredCloud(new PointCloud());
+		pcl::VoxelGrid<Point> Filter;
+		Filter.setInputCloud(NewCloud);
+		Filter.setLeafSize(Leafsize, Leafsize, Leafsize);
+		Filter.filter(*FilteredCloud);
+		NewCloud = FilteredCloud;
 	}
 
 	IndexKey Index{ Mesh["Index"][0], Mesh["Index"][1], Mesh["Index"][2] };

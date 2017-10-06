@@ -12,11 +12,13 @@ MIT License
 
 #include "Application.h"
 
+constexpr float Leafsize = 0.000f;
+
 RoomAlignment::RoomAlignment(Mosquitto & MQTT)
 	:MQTT(MQTT),
 	Viewer("Latest Rooms"),
-	HololensScan(UpdatingCloud::Source::Unity),
-	TangoScan(UpdatingCloud::Source::Tango),
+	HololensScan(UpdatingCloud::Source::Unity, Leafsize),
+	TangoScan(UpdatingCloud::Source::Tango, Leafsize),
 	CloudUpdate([&]()->bool {return (HololensScan.HasUpdates() || TangoScan.HasUpdates());}),
 	AlignedTangoRoom(new PointCloud()),
 	Transformation(Eigen::Matrix4f::Identity())
