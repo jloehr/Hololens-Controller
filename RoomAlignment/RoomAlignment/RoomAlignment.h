@@ -34,6 +34,7 @@ private:
 	const std::string TangoScanTopic = "TangoController/RoomScan/Update";
 	const std::string TangoScanResetTopic = "TangoController/RoomScan/Reset";
 
+	const std::string RoomAlignmentTransform = "RoomAlignment/Transform";
 	const std::string RoomAlignmentTestRunFinished = "RoomAlignment/Run/Finished";
 
 	const std::string TimeTextId = "TimeText";
@@ -61,6 +62,7 @@ private:
 	void Run();
 
 	bool HasConverged(const Eigen::Matrix4f & Previous, const Eigen::Matrix4f & Current);
+	void SendTransform();
 
 	void ShowLatest();
 	void ShowCloud(PointCloud::ConstPtr Cloud, const std::string & CloudName, uint8_t R, uint8_t G, uint8_t B);

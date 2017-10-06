@@ -98,12 +98,15 @@ void RoomAlignment::Run()
 			Eigen::Matrix4f PreviousTransformation = Transformation;
 			Transformation = ICP.getFinalTransformation();
 
-			if (!Converged)
-				end = std::chrono::steady_clock::now();
+			bool PreviousConverged = Converged;
 			Converged = HasConverged(PreviousTransformation, Transformation);
 
-			// if converged
-				// Send Transform
+			// If this very alignment made it converge
+			if (!PreviousConverged && Converged)
+			{
+				SendTransform();
+				end = std::chrono::steady_clock::now();
+			}
 
 			Iterations++;
 
@@ -149,6 +152,18 @@ bool RoomAlignment::HasConverged(const Eigen::Matrix4f & Previous, const Eigen::
 	std::cout << "MSE: " << std::fixed << std::setw(15) << std::setprecision(15) << MSE << std::endl;
 
 	return (MSE < Epsilon);
+}
+
+void RoomAlignment::SendTransform()
+{
+	nlohmann::json JSON;
+
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++)
+			JSON[std::string("m" + i + j)] = Transformation(i, j);
+
+	std::string Payload = JSON.dump();
+	MQTT.Publish(RoomAlignmentTransform, JSON.dump(), Mosquitto::AtLeastOnce, false);
 }
 
 void RoomAlignment::ShowLatest()
