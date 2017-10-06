@@ -27,6 +27,7 @@ void RoomAlignment::Initialize()
 {
 	Viewer.runOnVisualizationThread([this](pcl::visualization::PCLVisualizer & viewer) {VisualizationCallback(viewer);});
 	ICP.setMaximumIterations(1);
+	ICP.setMaxCorrespondenceDistance(1);
 }
 
 void RoomAlignment::Start()
