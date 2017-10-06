@@ -10,6 +10,11 @@ MIT License
 #include "stdafx.h"
 #include "HeadingTransformEstimation.h"
 
+void HeadingTransformEstimation::Reset()
+{
+	BothHeadingsSet = false;
+}
+
 bool HeadingTransformEstimation::HasBothHeadings() const
 {
 	// Either one estimation was already made, or both queues have messages

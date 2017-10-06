@@ -16,6 +16,7 @@ class HeadingTransformEstimation
 public:
 	typedef MonitoredQueue<std::string> MessageQueue;
 
+	void Reset();
 	bool HasBothHeadings() const;
 	bool HasNewEstimation() const;
 	Eigen::Matrix4f GetTransformEstimation();
