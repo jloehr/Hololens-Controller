@@ -26,16 +26,17 @@ public:
 	void Start();
 
 private:
-	const std::string HololensScanFile = "../../Data/SpatialMapping-Hololens-Office-CleanEmpty.pcd";
+	const std::string HololensScanFile = "../../Data/HoloLens-OfficeScan.pcd";
 	const std::string HololensScanTopic = "HololensController/RoomScan/Update";
 	const std::string HololensScanClearTopic = "HololensController/RoomScan/Clear";
 	const std::string HololensScanHeadingTopic = "HololensController/RoomScan/Heading";
-	const std::string TangoScanFile = "../../Data/Tango-Office-CleanEmpty.pcd";
+	const std::string TangoScanFile = "../../Data/Tango-OfficeScan.pcd";
 	const std::string TangoScanTopic = "TangoController/RoomScan/Update";
 	const std::string TangoScanResetTopic = "TangoController/RoomScan/Reset";
 
 	const std::string RoomAlignmentTransform = "RoomAlignment/Transform";
-	const std::string RoomAlignmentTestRunFinished = "RoomAlignment/Run/Finished";
+	const std::string RoomAlignmentRunFinished = "RoomAlignment/Run/Finished";
+	const std::string RoomAlignmentReplayFinished = "RoomAlignment/Replay/Finished";
 
 	const std::string TimeTextId = "TimeText";
 	const std::string PointTextId = "PointText";
@@ -54,10 +55,13 @@ private:
 	PointCloud::Ptr AlignedTangoRoom;
 
 	Eigen::Matrix4f Transformation;
-	pcl::IterativeClosestPoint<Point, Point> ICP;
+	//pcl::IterativeClosestPoint<Point, Point> ICP;
+	//pcl::IterativeClosestPointNonLinear<Point, Point> ICP;
+	//pcl::IterativeClosestPointWithNormals<Point, Point> ICP;
+	pcl::GeneralizedIterativeClosestPoint<Point, Point> ICP;
 	pcl::visualization::CloudViewer Viewer;
 
-	std::atomic_bool TestFinishedFlag;
+	std::atomic_bool ReplayFinishedFlag;
 
 	void Run();
 

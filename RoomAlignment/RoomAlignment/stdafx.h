@@ -12,6 +12,7 @@ MIT License
 #include "targetver.h"
 
 #include <iostream>
+#include <sstream>
 #include <iomanip>
 #include <chrono>
 
