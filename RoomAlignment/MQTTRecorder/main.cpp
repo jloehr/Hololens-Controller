@@ -14,13 +14,16 @@ static const int Port = 1883;
 static const std::string FileName = "Recording.mqtt";
 
 static std::atomic_bool Aborted = false;
+static std::atomic_bool Continue = false;
 static bool Connected = false;
 
 static void Record();
 static void Play();
-static mosquitto* InitMosquitto();
+static void PlayTest();
+static mosquitto* InitMosquitto(void(*on_message)(struct mosquitto *, void *, const struct mosquitto_message *));
 static void FinitMosquitto(mosquitto * & Context);
-static void OnMessage(mosquitto* Context, void * UserData, const mosquitto_message  * Message);
+static void RecordMessage(mosquitto* Context, void * UserData, const mosquitto_message  * Message);
+static void ContinueMessage(mosquitto* Context, void * UserData, const mosquitto_message  * Message);
 
 struct Message {
 	uint64_t Timestamp;
@@ -46,7 +49,8 @@ BOOL CtrlHandler(DWORD CtrlType)
 int main()
 {
 	//Record();
-	Play();
+	//Play();
+	PlayTest();
 
 	return 0;
 }
@@ -55,7 +59,7 @@ static void Record()
 {
 	SetConsoleCtrlHandler(reinterpret_cast<PHANDLER_ROUTINE>(CtrlHandler), true);
 
-	mosquitto* Context = InitMosquitto();
+	mosquitto* Context = InitMosquitto(RecordMessage);
 
 	mosquitto_subscribe(Context, nullptr, "HololensController/#", 2);
 	mosquitto_subscribe(Context, nullptr, "TangoController/#", 2);
@@ -68,6 +72,62 @@ static void Record()
 }
 
 static void Play()
+{
+	std::ifstream File(FileName, std::ofstream::binary);
+	typedef std::vector<Message> MessageList;
+	MessageList List;
+
+	if (!File.is_open())
+	{
+		std::cout << "File not opened: " << FileName << std::endl;
+		system("pause");
+		return;
+	}
+
+	while (File)
+	{
+		Message Buffer;
+		uint64_t DataLength;
+
+		File.read(reinterpret_cast<char *>(&Buffer.Timestamp), sizeof(Buffer.Timestamp));
+		std::getline(File, Buffer.Topic, '\0');
+		File.read(reinterpret_cast<char *>(&DataLength), sizeof(DataLength));
+		Buffer.Payload.resize(DataLength);
+		File.read(Buffer.Payload.data(), Buffer.Payload.size());
+
+		List.emplace_back(std::move(Buffer));
+	}
+
+	std::cout << "File ready: " << FileName << std::endl;
+	system("pause");
+
+	mosquitto* Context = InitMosquitto(ContinueMessage);
+	mosquitto_threaded_set(Context, true);
+
+	while (!Connected)
+		mosquitto_loop(Context, 1, INT_MAX);
+
+	std::thread LoopThread = std::thread([&]() { mosquitto_loop_forever(Context, -1, 1); });
+
+	while (true)
+	{	
+		auto Start = std::chrono::steady_clock::now();
+
+		for (const Message & Msg : List)
+		{
+			auto Time = Start + std::chrono::milliseconds(Msg.Timestamp);
+			std::this_thread::sleep_until(Time);
+			mosquitto_publish(Context, nullptr, Msg.Topic.c_str(), Msg.Payload.size(), Msg.Payload.data(), 2, false);	
+		}
+
+		std::cout << "Run finished!" << std::endl;
+		system("pause");
+	}
+
+	FinitMosquitto(Context);
+}
+
+static void PlayTest()
 {
 	std::ifstream File(FileName, std::ofstream::binary);
 	typedef std::vector<Message> MessageList;
@@ -111,11 +171,13 @@ static void Play()
 	std::cout << "File ready: " << FileName << std::endl;
 	system("pause");
 
-	mosquitto* Context = InitMosquitto();
+	mosquitto* Context = InitMosquitto(ContinueMessage);
 	mosquitto_threaded_set(Context, true);
 
 	while(!Connected) 
 		mosquitto_loop(Context, 1, INT_MAX);
+
+	mosquitto_subscribe(Context, nullptr, "RoomAlignment/Run/Finished", 2);
 
 	std::thread LoopThread = std::thread([&]() { mosquitto_loop_forever(Context, -1, 1); });
 
@@ -134,24 +196,26 @@ static void Play()
 			// Sleep one second, so RoomAlignment can process data
 			std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
+			uint64_t Milliseconds = Seconds * 1000;
 			auto Start = std::chrono::steady_clock::now();
-			auto End = Start + std::chrono::seconds(Seconds);
 
 			for (const Message & Msg : List)
 			{
-				auto Time = Start + std::chrono::milliseconds(Msg.Timestamp);
-
-				// If next update is beyond current data timespan finish up
-				if (Time > End)
+				// Process all with Timestamp within Seconds
+				if (Msg.Timestamp > Milliseconds)
 					break;
 
+				auto Time = Start + std::chrono::milliseconds(Msg.Timestamp);
 				std::this_thread::sleep_until(Time);
 				mosquitto_publish(Context, nullptr, Msg.Topic.c_str(), Msg.Payload.size(), Msg.Payload.data(), 2, false);
 			}
-
-			mosquitto_publish(Context, nullptr, "RoomAlignment/Run/Finished", 0, nullptr, 2, false);
-			std::cout << "Run finished!" << std::endl;
-			system("pause");
+			Continue = false;
+			mosquitto_publish(Context, nullptr, "RoomAlignment/Replay/Finished", 0, nullptr, 2, false);
+			std::cout << "Replay finished!" << std::endl;
+			while (!Continue)
+			{
+				std::this_thread::sleep_for(std::chrono::seconds(1));
+			}
 		}
 
 		std::cout << "Test finished!"<< std::endl;
@@ -161,7 +225,7 @@ static void Play()
 	FinitMosquitto(Context);
 }
 
-static mosquitto* InitMosquitto()
+static mosquitto* InitMosquitto(void(*on_message)(struct mosquitto *, void *, const struct mosquitto_message *))
 {
 	int Result;
 	mosquitto * Context = nullptr;
@@ -174,7 +238,7 @@ static mosquitto* InitMosquitto()
 	}
 
 	Context = mosquitto_new(nullptr, true, nullptr);
-	mosquitto_message_callback_set(Context, OnMessage);
+	mosquitto_message_callback_set(Context, on_message);
 	mosquitto_connect_callback_set(Context, [](mosquitto * Context, void * UserData, int Result) { Connected = true; std::cout << "Connect Result: " << Result << std::endl; });
 	mosquitto_disconnect_callback_set(Context, [](mosquitto * Context, void * UserData, int Result) {Connected = false; std::cout << "Disconnect Result: " << Result << std::endl;});
 	mosquitto_subscribe_callback_set(Context, [](mosquitto * Context, void * UserData, int Result, int, const int *) {std::cout << "Subscribe Result: " << Result << std::endl;});
@@ -198,7 +262,7 @@ static void FinitMosquitto(mosquitto * &Context)
 	mosquitto_lib_cleanup();
 }
 
-static void OnMessage(mosquitto* Context, void * UserData, const mosquitto_message  * Message)
+static void RecordMessage(mosquitto* Context, void * UserData, const mosquitto_message  * Message)
 {
 	static std::ofstream File(FileName, std::ofstream::binary | std::ofstream::trunc);
 	static std::chrono::steady_clock::time_point Start = std::chrono::steady_clock::now();
@@ -213,4 +277,9 @@ static void OnMessage(mosquitto* Context, void * UserData, const mosquitto_messa
 	File.write(static_cast<char *>(Message->payload), Message->payloadlen);
 
 	File.flush();
+}
+
+static void ContinueMessage(mosquitto* Context, void * UserData, const mosquitto_message  * Message)
+{
+	Continue = true;
 }
