@@ -13,6 +13,8 @@ MIT License
 
 int main()
 {
+	std::locale::global(std::locale(""));
+
 	Application Application;
 	Application.Run();
 
