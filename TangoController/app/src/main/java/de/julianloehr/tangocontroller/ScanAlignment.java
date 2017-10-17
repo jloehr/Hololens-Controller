@@ -10,6 +10,7 @@ import com.google.atap.tangoservice.TangoPointCloudData;
 
 public class ScanAlignment extends AppCompatActivity {
     public static final String TAG = ScanAlignment.class.getSimpleName();
+    private static final String TapTopic = "TangoController/Controller/Tap";
 
     TangoWrapper tangoWrapper;
     MeshConstructor meshConstructor;
@@ -51,5 +52,8 @@ public class ScanAlignment extends AppCompatActivity {
         meshUpdater.Reset();
     }
 
-
+    public void onTapButtonClick(View v)
+    {
+        MainActivity.mqttWrapper.Publish(TapTopic, null, 2);
+    }
 }
