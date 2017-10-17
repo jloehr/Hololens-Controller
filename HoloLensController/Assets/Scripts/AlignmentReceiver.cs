@@ -23,8 +23,9 @@ public class AlignmentReceiver : MonoBehaviour
         Transformation.m12 *= -1f;
         Transformation.m20 *= -1f;
         Transformation.m21 *= -1f;
-        Transformation.m32 *= -1f;
-
+   
+        Transformation.m23 *= -1f;
+        
         transform.localPosition = Transformation.GetColumn(3);
         transform.localRotation = Quaternion.LookRotation(Transformation.GetColumn(2), Transformation.GetColumn(1));
     }
