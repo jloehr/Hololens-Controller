@@ -231,9 +231,14 @@ void RoomAlignment::SendTransform()
 {
 	nlohmann::json JSON;
 
+
 	for (int i = 0; i < 4; i++)
 		for (int j = 0; j < 4; j++)
-			JSON[std::string("m" + i + j)] = Transformation(i, j);
+		{
+			std::stringstream Name;
+			Name << "m" << i << j;
+			JSON[Name.str()] = Transformation(i, j);
+		}
 
 	std::string Payload = JSON.dump();
 	MQTT.Publish(RoomAlignmentTransform, JSON.dump(), Mosquitto::AtLeastOnce, false);
