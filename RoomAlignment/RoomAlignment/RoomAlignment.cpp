@@ -26,6 +26,9 @@ constexpr float Leafsize = 0.000f;
 //constexpr size_t MaxIterations = 15000;
 //constexpr size_t MaxIterations = 30000;
 
+static std::atomic_bool TakeScreen = false;
+static std::atomic_uint64_t Seconds = 0;
+
 RoomAlignment::RoomAlignment(Mosquitto & MQTT)
 	:MQTT(MQTT),
 	Viewer("Latest Rooms"),
@@ -115,6 +118,30 @@ void RoomAlignment::Run()
 
 		// Get Transform Estimate 
 		Transformation = HeadingEstimation.GetTransformEstimation();
+
+		/*
+		while (true)
+		{
+			// Update Clouds
+			HololensRoom = HololensScan.GetCurrentCloud();
+			TangoRoom = TangoScan.GetCurrentCloud();
+
+			pcl::transformPointCloud(*TangoRoom, *AlignedTangoRoom, Transformation);
+
+			ShowLatest();
+
+			if (ReplayFinishedFlag)
+			{
+				Seconds++;
+				TakeScreen = true;
+				while (TakeScreen == true)
+					std::this_thread::sleep_for(std::chrono::microseconds(10));
+
+				ReplayFinishedFlag = false;
+				// Signale Replay to send next
+				MQTT.Publish(RoomAlignmentRunFinished, std::string(), Mosquitto::ExactlyOnce, false);
+			}
+		}*/
 
 		ShowLatest();
 		std::cout << "Start" << std::endl;
@@ -269,4 +296,12 @@ void RoomAlignment::VisualizationCallback(pcl::visualization::PCLVisualizer & vi
 {
 	if (viewer.wasStopped())
 		Application::Close();
+
+	if (TakeScreen)
+	{
+		std::stringstream Name;
+		Name << "Tango" << Seconds << ".png";
+		viewer.saveScreenshot(Name.str());
+		TakeScreen = false;
+	}
 }
