@@ -12,16 +12,19 @@ MIT License
 
 #include "Application.h"
 
-//constexpr float Leafsize = 0.000f;
+constexpr size_t MaxIterations = 0;
+constexpr float Leafsize = 0.000f;
 //constexpr float Leafsize = 0.01f;
 //constexpr float Leafsize = 0.05f;
-//constexpr size_t MaxIterations = 500;
+//constexpr size_t MaxIterations = 1000;
 //constexpr float Leafsize = 0.1f;
 //constexpr size_t MaxIterations = 2000;
 //constexpr float Leafsize = 0.2f;
 //constexpr size_t MaxIterations = 5000;
-constexpr float Leafsize = 0.5f;
-constexpr size_t MaxIterations = 15000;
+//constexpr size_t MaxIterations = 10000;
+//constexpr float Leafsize = 0.5f;
+//constexpr size_t MaxIterations = 15000;
+//constexpr size_t MaxIterations = 30000;
 
 RoomAlignment::RoomAlignment(Mosquitto & MQTT)
 	:MQTT(MQTT),
@@ -126,7 +129,7 @@ void RoomAlignment::Run()
 			TangoRoom = TangoScan.GetCurrentCloud();
 		}
 
-		while (((!Converged && (Iterations < MaxIterations)) || !ReplayFinishedFlag) && ((HololensRoom->size() >= 0) && (TangoRoom->size() >= 0)))
+		while (((!Converged && ((Iterations < MaxIterations) || (MaxIterations == 0))) || !ReplayFinishedFlag) && ((HololensRoom->size() >= 0) && (TangoRoom->size() >= 0)))
 		{
 			// Update Clouds
 			HololensRoom = HololensScan.GetCurrentCloud();
