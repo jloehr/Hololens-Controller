@@ -57,7 +57,7 @@ void HeadingTransformEstimation::UpdateHoloLensTransform()
 
 	HoloLensTransform = Eigen::Matrix4f::Identity();
 
-	double theta = AsJSON["Angle"] * M_PI / 180;  // The angle of rotation in radians
+	double theta = AsJSON["Angle"].get<double>() * M_PI / 180.;  // The angle of rotation in radians
 	// X
 	/*
 	HoloLensTransform(1, 1) = cos(theta);
