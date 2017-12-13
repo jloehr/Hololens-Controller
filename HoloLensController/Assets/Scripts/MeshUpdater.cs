@@ -11,6 +11,8 @@ public class MeshUpdater : MonoBehaviour {
     public string UpdateTopic;
     public string ClearTopic;
 
+    private Dictionary<int, SpatialMappingSource.SurfaceObject> Work = new Dictionary<int, SpatialMappingSource.SurfaceObject>();
+
     // Use this for initialization
     void Start () {
         SpatialMappingObserver Observer = GetComponent<SpatialMappingObserver>();
@@ -24,19 +26,28 @@ public class MeshUpdater : MonoBehaviour {
     void OnSurfaceAdded(object sender, HoloToolkit.Unity.DataEventArgs<SpatialMappingSource.SurfaceObject> e)
     {
         Debug.Log("Surface Added: " + e.Data.ID);
-        SendMesh(e.Data);
+        Work[e.Data.ID] = e.Data;
     }
 
     void OnSurfaceUpdated(object sender, HoloToolkit.Unity.DataEventArgs<SpatialMappingSource.SurfaceUpdate> e)
     {
         Debug.Log("Surface Updated: " + e.Data.Old.ID + "/" +  e.Data.New.ID);
-        SendMesh(e.Data.New);
+        Work[e.Data.New.ID] = e.Data.New;
     }
 
     void OnSurfaceRemoved(object sender, HoloToolkit.Unity.DataEventArgs<SpatialMappingSource.SurfaceObject> e)
     {
         Debug.Log("Surface Removed: " + e.Data.ID);
-        SendMesh(e.Data);
+        Work[e.Data.ID] = e.Data;
+    }
+
+    void Update()
+    {
+        if(Work.Count > 0)
+        {
+            SendMeshes();
+            Work.Clear();
+        }
     }
 
     [Serializable]
@@ -53,16 +64,29 @@ public class MeshUpdater : MonoBehaviour {
         public Mesh[] Meshes;
     }
 
-    void SendMesh(SpatialMappingSource.SurfaceObject Mesh)
+    void SendMeshes()
     {
         Message MeshUpdate = new Message();
-        MeshUpdate.Meshes = new Message.Mesh[1];
-        MeshUpdate.Meshes[0] = PackMesh(Mesh);
+        MeshUpdate.Meshes = new Message.Mesh[Work.Count];
+        int Index = 0;
+
+        foreach(SpatialMappingSource.SurfaceObject Mesh in Work.Values)
+        {
+            MeshUpdate.Meshes[Index++] = PackMesh(Mesh);
+        }
+
+#if UNITY_WSA && !UNITY_EDITOR
+        Windows.System.Threading.ThreadPool.RunAsync((workItem) => {
+#endif
 
         string AsString = JsonUtility.ToJson(MeshUpdate);
         byte[] AsBytes = Encoding.UTF8.GetBytes(AsString);
         
         MQTT.MQTTManager.Instance.Publish(UpdateTopic, AsBytes, false, MQTTManager.PublishType.ExactlyOnce);
+
+#if UNITY_WSA && !UNITY_EDITOR
+        });
+#endif
     }
 
     Message.Mesh PackMesh(SpatialMappingSource.SurfaceObject Mesh)
@@ -70,9 +94,13 @@ public class MeshUpdater : MonoBehaviour {
         Message.Mesh NewMesh = new Message.Mesh();
         NewMesh.Index = new int[3];
         NewMesh.Index[0] = Mesh.ID;
-        NewMesh.Vertices = PackFloats(Mesh.Filter.mesh.vertices, Mesh.Object.transform.localToWorldMatrix);
-        Mesh.Filter.mesh.RecalculateNormals();
-        NewMesh.Normals = PackFloats(Mesh.Filter.mesh.normals, Matrix4x4.TRS(Vector3.zero, Mesh.Object.transform.rotation, Vector3.one));
+
+        if(Mesh.Filter)
+        {
+            NewMesh.Vertices = PackFloats(Mesh.Filter.mesh.vertices, Mesh.Object.transform.localToWorldMatrix);
+            Mesh.Filter.mesh.RecalculateNormals();
+            NewMesh.Normals = PackFloats(Mesh.Filter.mesh.normals, Matrix4x4.TRS(Vector3.zero, Mesh.Object.transform.rotation, Vector3.one));
+        }
        
         return NewMesh;
     }
