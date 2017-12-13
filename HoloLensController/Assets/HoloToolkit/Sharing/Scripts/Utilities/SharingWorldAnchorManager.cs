@@ -7,9 +7,9 @@ using HoloToolkit.Unity;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.VR.WSA;
-using UnityEngine.VR.WSA.Persistence;
-using UnityEngine.VR.WSA.Sharing;
+
+
+
 #endif
 
 
@@ -41,7 +41,7 @@ namespace HoloToolkit.Sharing
         /// WorldAnchorTransferBatch is the primary object in serializing/deserializing anchors.
         /// <remarks>Only available on device.</remarks>
         /// </summary>
-        private WorldAnchorTransferBatch currentAnchorTransferBatch;
+        private UnityEngine.XR.WSA.Sharing.WorldAnchorTransferBatch currentAnchorTransferBatch;
 
         private bool isExportingAnchors;
         private bool shouldExportAnchors;
@@ -112,7 +112,7 @@ namespace HoloToolkit.Sharing
 
                     isImportingAnchors = true;
                     shouldImportAnchors = false;
-                    WorldAnchorTransferBatch.ImportAsync(rawAnchorDownloadData, ImportComplete);
+                    UnityEngine.XR.WSA.Sharing.WorldAnchorTransferBatch.ImportAsync(rawAnchorDownloadData, ImportComplete);
                 }
 
                 if (shouldExportAnchors && !isExportingAnchors && !isImportingAnchors)
@@ -124,7 +124,7 @@ namespace HoloToolkit.Sharing
 
                     isExportingAnchors = true;
                     shouldExportAnchors = false;
-                    WorldAnchorTransferBatch.ExportAsync(currentAnchorTransferBatch, WriteBuffer, ExportComplete);
+                    UnityEngine.XR.WSA.Sharing.WorldAnchorTransferBatch.ExportAsync(currentAnchorTransferBatch, WriteBuffer, ExportComplete);
                 }
             }
         }
@@ -143,7 +143,7 @@ namespace HoloToolkit.Sharing
         /// Callback function that contains the WorldAnchorStore object.
         /// </summary>
         /// <param name="anchorStore">The WorldAnchorStore to cache.</param>
-        protected override void AnchorStoreReady(WorldAnchorStore anchorStore)
+        protected override void AnchorStoreReady(UnityEngine.XR.WSA.Persistence.WorldAnchorStore anchorStore)
         {
             AnchorStore = anchorStore;
 
@@ -489,7 +489,7 @@ namespace HoloToolkit.Sharing
         /// </summary>
         /// <param name="anchor">The anchor to export.</param>
         /// <returns>Success</returns>
-        protected override void ExportAnchor(WorldAnchor anchor)
+        protected override void ExportAnchor(UnityEngine.XR.WSA.WorldAnchor anchor)
         {
             if (SharingStage.Instance == null ||
                 SharingStage.Instance.Manager == null ||
@@ -518,7 +518,7 @@ namespace HoloToolkit.Sharing
 
                 if (currentAnchorTransferBatch == null)
                 {
-                    currentAnchorTransferBatch = new WorldAnchorTransferBatch();
+                    currentAnchorTransferBatch = new UnityEngine.XR.WSA.Sharing.WorldAnchorTransferBatch();
                     if (AnchorDebugText != null)
                     {
                         AnchorDebugText.text += "\nCreating a new World Anchor Transfer Batch...";
@@ -542,9 +542,9 @@ namespace HoloToolkit.Sharing
         /// Called by the WorldAnchorTransferBatch when anchor exporting is complete.
         /// </summary>
         /// <param name="status">Serialization Status.</param>
-        private void ExportComplete(SerializationCompletionReason status)
+        private void ExportComplete(UnityEngine.XR.WSA.Sharing.SerializationCompletionReason status)
         {
-            if (status == SerializationCompletionReason.Succeeded &&
+            if (status == UnityEngine.XR.WSA.Sharing.SerializationCompletionReason.Succeeded &&
                 rawAnchorUploadData.Count > MinTrustworthySerializedAnchorDataSize)
             {
                 if (ShowDetailedLogs)
@@ -596,9 +596,9 @@ namespace HoloToolkit.Sharing
         /// </summary>
         /// <param name="status"></param>
         /// <param name="anchorBatch"></param>
-        private void ImportComplete(SerializationCompletionReason status, WorldAnchorTransferBatch anchorBatch)
+        private void ImportComplete(UnityEngine.XR.WSA.Sharing.SerializationCompletionReason status, UnityEngine.XR.WSA.Sharing.WorldAnchorTransferBatch anchorBatch)
         {
-            bool successful = status == SerializationCompletionReason.Succeeded;
+            bool successful = status == UnityEngine.XR.WSA.Sharing.SerializationCompletionReason.Succeeded;
             GameObject objectToAnchor = null;
 
             if (successful)

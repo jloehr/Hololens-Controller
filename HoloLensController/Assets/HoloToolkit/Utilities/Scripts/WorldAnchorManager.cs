@@ -6,8 +6,8 @@ using UnityEngine;
 #if UNITY_WSA
 using System;
 using System.Collections.Generic;
-using UnityEngine.VR.WSA;
-using UnityEngine.VR.WSA.Persistence;
+
+
 #if !UNITY_EDITOR
 using HoloToolkit.Unity.SpatialMapping;
 #endif
@@ -78,7 +78,7 @@ namespace HoloToolkit.Unity
         /// The WorldAnchorStore for the current application.
         /// Can be null when the application starts.
         /// </summary>
-        public WorldAnchorStore AnchorStore { get; protected set; }
+        public UnityEngine.XR.WSA.Persistence.WorldAnchorStore AnchorStore { get; protected set; }
 
         /// <summary>
         /// Internal list of anchors and their GameObject references.
@@ -95,7 +95,7 @@ namespace HoloToolkit.Unity
 
         protected virtual void Start()
         {
-            WorldAnchorStore.GetAsync(AnchorStoreReady);
+            UnityEngine.XR.WSA.Persistence.WorldAnchorStore.GetAsync(AnchorStoreReady);
         }
 
         protected virtual void Update()
@@ -116,7 +116,7 @@ namespace HoloToolkit.Unity
         /// Callback function that contains the WorldAnchorStore object.
         /// </summary>
         /// <param name="anchorStore">The WorldAnchorStore to cache.</param>
-        protected virtual void AnchorStoreReady(WorldAnchorStore anchorStore)
+        protected virtual void AnchorStoreReady(UnityEngine.XR.WSA.Persistence.WorldAnchorStore anchorStore)
         {
             AnchorStore = anchorStore;
 
@@ -133,7 +133,7 @@ namespace HoloToolkit.Unity
         /// </summary>
         /// <param name="anchor">The anchor that is reporting a tracking changed event.</param>
         /// <param name="located">Indicates if the anchor is located or not located.</param>
-        private void Anchor_OnTrackingChanged(WorldAnchor anchor, bool located)
+        private void Anchor_OnTrackingChanged(UnityEngine.XR.WSA.WorldAnchor anchor, bool located)
         {
             if (located && SaveAnchor(anchor))
             {
@@ -301,9 +301,9 @@ namespace HoloToolkit.Unity
         /// </summary>
         public void RemoveAllAnchors()
         {
-#if !UNITY_WSA || UNITY_EDITOR
+#if FALSE
             Debug.LogWarning("World Anchor Manager does not work for this build. RemoveAnchor will not be called.");
-#else
+
             SpatialMappingManager spatialMappingManager = SpatialMappingManager.Instance;
 
             // This case is unexpected, but just in case.
@@ -372,7 +372,7 @@ namespace HoloToolkit.Unity
                     }
 
                     // Try to load a previously saved world anchor.
-                    WorldAnchor savedAnchor = AnchorStore.Load(anchorId, anchoredGameObject);
+                    UnityEngine.XR.WSA.WorldAnchor savedAnchor = AnchorStore.Load(anchorId, anchoredGameObject);
 
                     if (savedAnchor == null)
                     {
@@ -424,7 +424,7 @@ namespace HoloToolkit.Unity
 
                     if (anchoredGameObject != null)
                     {
-                        var anchor = anchoredGameObject.GetComponent<WorldAnchor>();
+                        var anchor = anchoredGameObject.GetComponent<UnityEngine.XR.WSA.WorldAnchor>();
 
                         if (anchor != null)
                         {
@@ -476,7 +476,7 @@ namespace HoloToolkit.Unity
         /// <param name="anchorName">The name to give to the anchor.</param>
         private void CreateAnchor(GameObject gameObjectToAnchor, string anchorName)
         {
-            var anchor = gameObjectToAnchor.EnsureComponent<WorldAnchor>();
+            var anchor = gameObjectToAnchor.EnsureComponent<UnityEngine.XR.WSA.WorldAnchor>();
             anchor.name = anchorName;
 
             // Sometimes the anchor is located immediately. In that case it can be saved immediately.
@@ -495,7 +495,7 @@ namespace HoloToolkit.Unity
         /// Saves the anchor to the anchor store.
         /// </summary>
         /// <param name="anchor">Anchor.</param>
-        private bool SaveAnchor(WorldAnchor anchor)
+        private bool SaveAnchor(UnityEngine.XR.WSA.WorldAnchor anchor)
         {
             // Save the anchor to persist holograms across sessions.
             if (AnchorStore.Save(anchor.name, anchor))
@@ -569,7 +569,7 @@ namespace HoloToolkit.Unity
         /// </summary>
         /// <param name="anchor">The anchor to export.</param>
         /// <returns>Success.</returns>
-        protected virtual void ExportAnchor(WorldAnchor anchor) { }
+        protected virtual void ExportAnchor(UnityEngine.XR.WSA.WorldAnchor anchor) { }
 #endif
     }
 }
