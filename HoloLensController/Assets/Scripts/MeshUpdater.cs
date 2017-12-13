@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Text;
 using System;
+using UnityEngine.Profiling;
 
 public class MeshUpdater : MonoBehaviour {
 
@@ -66,6 +67,7 @@ public class MeshUpdater : MonoBehaviour {
 
     void SendMeshes()
     {
+        Profiler.BeginSample("MeshUpdater");
         Message MeshUpdate = new Message();
         MeshUpdate.Meshes = new Message.Mesh[Work.Count];
         int Index = 0;
@@ -87,6 +89,7 @@ public class MeshUpdater : MonoBehaviour {
 #if UNITY_WSA && !UNITY_EDITOR
         });
 #endif
+        Profiler.EndSample();
     }
 
     Message.Mesh PackMesh(SpatialMappingSource.SurfaceObject Mesh)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 public class AlignmentReceiver : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class AlignmentReceiver : MonoBehaviour
 	
     void OnAlignment(string Topic, byte[] Payload)
     {
+        Profiler.BeginSample("Alignment receiver");
         gameObject.SetActive(true);
 
         string AsString = Encoding.UTF8.GetString(Payload);
@@ -28,5 +30,6 @@ public class AlignmentReceiver : MonoBehaviour
         
         transform.localPosition = Transformation.GetColumn(3);
         transform.localRotation = Quaternion.LookRotation(Transformation.GetColumn(2), Transformation.GetColumn(1));
+        Profiler.EndSample();
     }
 }
