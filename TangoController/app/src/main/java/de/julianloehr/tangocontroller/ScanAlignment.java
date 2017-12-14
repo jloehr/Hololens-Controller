@@ -4,12 +4,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 
 import com.google.atap.tangoservice.TangoCameraIntrinsics;
 import com.google.atap.tangoservice.TangoPointCloudData;
 
 public class ScanAlignment extends AppCompatActivity {
     public static final String TAG = ScanAlignment.class.getSimpleName();
+    private static final String DoneTopic = "TangoController/Controller/Done";
+    private static final String SwapTopic = "TangoController/Controller/Swap";
     private static final String TapTopic = "TangoController/Controller/Tap";
 
     TangoWrapper tangoWrapper;
@@ -47,9 +50,20 @@ public class ScanAlignment extends AppCompatActivity {
         tangoWrapper.Stop();
     }
 
-    public void onClearButtonClick(View v)
+    public void onDoneButtonClick(View v)
     {
-        meshUpdater.Reset();
+        meshUpdater.Enabled = false;
+        MainActivity.mqttWrapper.Publish(DoneTopic, null, 2);
+
+        Button DoneButton = (Button) findViewById(R.id.done);
+        DoneButton.setVisibility(View.GONE);
+        Button SwapButton = (Button) findViewById(R.id.swap);
+        SwapButton.setVisibility(View.VISIBLE);
+    }
+
+    public void onSwapButtonClick(View v)
+    {
+        MainActivity.mqttWrapper.Publish(SwapTopic, null, 2);
     }
 
     public void onTapButtonClick(View v)

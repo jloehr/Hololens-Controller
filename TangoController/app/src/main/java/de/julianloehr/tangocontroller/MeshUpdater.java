@@ -19,6 +19,8 @@ public class MeshUpdater implements TangoWrapper.OnTangoReadyListener, MeshConst
     private static final String UpdateTopic = "TangoController/RoomScan/Update";
     private static final String ResetTopic = "TangoController/RoomScan/Reset";
 
+    public boolean Enabled = true;
+
     @Override
     public void onTangoReady(Tango tango) {
         Reset();
@@ -54,6 +56,9 @@ public class MeshUpdater implements TangoWrapper.OnTangoReadyListener, MeshConst
     @Override
     public void onTangoMeshesAvailable(final TangoMesh[] meshes) {
         if(meshes.length == 0)
+            return;
+
+        if(!Enabled)
             return;
 
         Log.i(TAG, "Updating Meshes: " + meshes.length );

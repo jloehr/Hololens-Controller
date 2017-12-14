@@ -24,21 +24,32 @@
             android:text="Scan your sourrounding" />
 
         <Button
-            android:id="@+id/clear"
+            android:id="@+id/done"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:layout_below="@id/textView"
-            android:text="Clear"
-            android:onClick="onClearButtonClick" />
+            android:text="Done"
+            android:onClick="onDoneButtonClick" />
+
         <Button
-            android:id="@+id/tap"
+            android:id="@+id/swap"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@id/done"
             android:layout_centerInParent="true"
-            android:layout_below="@id/clear"
+            android:onClick="onSwapButtonClick"
+            android:text="Swap"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/tap"
+            android:layout_width="400px"
+            android:layout_height="350px"
+            android:onClick="onTapButtonClick"
             android:text="Tap"
-            android:onClick="onTapButtonClick" />
+            android:layout_below="@+id/swap"
+            android:layout_centerHorizontal="true" />
 
     </RelativeLayout>
 </android.support.constraint.ConstraintLayout>
