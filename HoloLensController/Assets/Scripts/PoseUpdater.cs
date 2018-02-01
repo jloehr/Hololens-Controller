@@ -33,7 +33,7 @@ public class PoseUpdater : MonoBehaviour {
         {
             Profiler.BeginSample("Pose Updater");
 
-            Debug.Log("Pose received on Frame " + Time.frameCount);
+            //Debug.Log("Pose received on Frame " + Time.frameCount);
 
             string DataAsString = Encoding.UTF8.GetString(Buffer);
             Data Update = JsonUtility.FromJson<Data>(DataAsString);
