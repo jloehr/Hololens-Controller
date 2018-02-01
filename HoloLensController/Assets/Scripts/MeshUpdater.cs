@@ -11,6 +11,7 @@ public class MeshUpdater : MonoBehaviour {
 
     public string UpdateTopic;
     public string ClearTopic;
+    public string DoneTopic;
 
     private Dictionary<int, SpatialMappingSource.SurfaceObject> Work = new Dictionary<int, SpatialMappingSource.SurfaceObject>();
 
@@ -22,6 +23,19 @@ public class MeshUpdater : MonoBehaviour {
         Observer.SurfaceRemoved += OnSurfaceRemoved;
 
         MQTT.MQTTManager.Instance.Publish(ClearTopic, null, false, MQTTManager.PublishType.ExactlyOnce);
+        MQTT.MQTTManager.Instance.Subscribe(DoneTopic, OnDone);
+    }
+
+    void OnDone(string Topic, byte[] Data)
+    {
+        Debug.Log("On Done!");
+
+        SpatialMappingObserver Observer = GetComponent<SpatialMappingObserver>();
+        Observer.SurfaceAdded -= OnSurfaceAdded;
+        Observer.SurfaceUpdated -= OnSurfaceUpdated;
+        Observer.SurfaceRemoved -= OnSurfaceRemoved;
+
+        this.enabled = false;
     }
 
     void OnSurfaceAdded(object sender, HoloToolkit.Unity.DataEventArgs<SpatialMappingSource.SurfaceObject> e)
