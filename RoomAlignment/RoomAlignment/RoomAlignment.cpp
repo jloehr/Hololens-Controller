@@ -58,13 +58,103 @@ void RoomAlignment::Run()
 {
 	//Subscribe to Topics
 	MQTT.Subscribe(RoomAlignment::HololensScanTopic, [this](const std::string Topic, const std::string & Payload) { HololensScan.UpdateQueue.Enqueue(Payload); CloudUpdate.Wake(); }, Mosquitto::AtLeastOnce);
-	MQTT.Subscribe(RoomAlignment::HololensScanClearTopic, [this](const std::string Topic, const std::string & Payload) { HololensScan.Clear(); }, Mosquitto::ExactlyOnce);
+	MQTT.Subscribe(RoomAlignment::HololensScanClearTopic, [this](const std::string Topic, const std::string & Payload) { HololensScan.Clear(); TangoScan.Clear(); }, Mosquitto::ExactlyOnce);
 	MQTT.Subscribe(RoomAlignment::HololensScanHeadingTopic, [this](const std::string Topic, const std::string & Payload) { HeadingEstimation.HoloLensHeadingQueue.Enqueue(Payload); }, Mosquitto::ExactlyOnce);
 	MQTT.Subscribe(RoomAlignment::TangoScanTopic, [this](const std::string Topic, const std::string & Payload) { TangoScan.UpdateQueue.Enqueue(Payload);  CloudUpdate.Wake(); }, Mosquitto::AtLeastOnce);
 	MQTT.Subscribe(RoomAlignment::TangoScanResetTopic, [this](const std::string Topic, const std::string & Payload) { TangoScan.Clear(); HeadingEstimation.TangoHeadingQueue.Enqueue(Payload); }, Mosquitto::ExactlyOnce);
 	MQTT.Subscribe(RoomAlignment::RoomAlignmentReplayFinished, [this](const std::string Topic, const std::string & Payload) { ReplayFinishedFlag = true; }, Mosquitto::ExactlyOnce);
 
+	{
+		std::atomic_bool Fence = false;
 
+		std::atomic<int> ViewpointMain;
+		std::atomic<int> ViewpointTop;
+		std::atomic<int> ViewpointSide;
+
+		Viewer.runOnVisualizationThreadOnce([&](pcl::visualization::PCLVisualizer & viewer) { 
+			int Tmp;
+			viewer.setSize(1280, 720);
+
+			viewer.createViewPort(0.0, 0.0, 0.66, 1.0, Tmp);
+			ViewpointMain = Tmp;
+			viewer.createViewPortCamera(ViewpointMain);
+			viewer.setBackgroundColor(0.1, 0.1, 0.1, ViewpointMain);
+			viewer.addCoordinateSystem(0.1, "global", ViewpointMain);
+
+			viewer.createViewPort(0.66, 0.34, 1.0, 1.0, Tmp);
+			ViewpointTop = Tmp;
+			viewer.createViewPortCamera(ViewpointTop);
+			viewer.setBackgroundColor(0.1, 0.1, 0.1, ViewpointTop);
+			viewer.addCoordinateSystem(0.1, "global", ViewpointTop);
+
+			viewer.createViewPort(0.66, 0., 1.0, 0.34, Tmp);
+			ViewpointSide = Tmp;
+			viewer.createViewPortCamera(ViewpointSide);
+			viewer.setBackgroundColor(0.1, 0.1, 0.1, ViewpointSide);
+			viewer.addCoordinateSystem(0.1, "global", ViewpointSide);
+
+			Fence = true;
+			/*
+			viewer.setCameraPosition(
+				0., -20., 0.,
+				0., 0., 0.,
+				0., 0., -1., 
+				Viewpoint
+			);*/
+			/*
+			viewer.setCameraPosition(
+			-13., 10., 6.,
+			0., 0., 0.,
+			0., 1., 0.
+			);*/
+		});
+
+		while (!Fence)
+			std::this_thread::yield();
+
+		HololensRoom = HololensScan.GetCurrentCloud();
+		TangoRoom = TangoScan.GetCurrentCloud();
+		ShowLatest();
+
+
+		int  ViewpointMainTmp = ViewpointMain;
+		int  ViewpointTopTmp =  ViewpointTop;
+		int  ViewpointSideTmp = ViewpointSide;
+
+		Viewer.runOnVisualizationThread([=](pcl::visualization::PCLVisualizer & viewer) {
+			//viewer.initCameraParameters();
+			/*
+			std::vector<pcl::visualization::Camera> Cameras;
+			viewer.getCameras(Cameras);
+			viewer.setCameraParameters(Cameras[0], ViewpointMain);
+			viewer.setCameraParameters(Cameras[0], ViewpointTop);
+			viewer.setCameraParameters(Cameras[0], ViewpointSide);
+			//*/
+			//viewer.setCameraClipDistances(Cameras[0].clip[0], Cameras[0].clip[1], ViewpointMain);
+			//viewer.setCameraFieldOfView(Cameras[0].fovy);
+			viewer.setCameraPosition(
+				-13., 10., 6.,
+				0., 0., 0.,
+				0., 1., 0.,
+				ViewpointMainTmp
+			);
+			//viewer.setCameraClipDistances(0.1, 100, ViewpointTop);
+			viewer.setCameraPosition(
+				2., 20., 0.,
+				2., 0., 0.,
+				0., 0., -1.,
+				ViewpointTopTmp
+			);
+			//viewer.setCameraClipDistances(0.1, 100, ViewpointSide);
+			viewer.setCameraPosition(
+				-10., 0., 0.,
+				0., 0., 0.,
+				0., 1., 0.,
+				ViewpointSideTmp
+			);
+		});
+	}
+	
 	std::stringstream IterationStr;
 	std::stringstream TimeStr;
 	std::stringstream HoloLensStr;
